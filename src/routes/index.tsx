@@ -68,7 +68,27 @@ function Dashboard() {
     staleTime: 60_000,
   });
 
-  const faculty = data?.faculty ?? [];
+  const [activeDept, setActiveDept] = useState<string>("All");
+
+  const allFaculty = data?.faculty ?? [];
+
+  const allDepts = useMemo(() => {
+    const depts = new Map<string, FacultyRow[]>();
+    for (const f of allFaculty) {
+      const list = depts.get(f.dept) ?? [];
+      list.push(f);
+      depts.set(f.dept, list);
+    }
+    return [...depts.entries()].sort((a, b) => b[1].length - a[1].length);
+  }, [allFaculty]);
+
+  const faculty = useMemo(
+    () =>
+      activeDept === "All"
+        ? allFaculty
+        : allFaculty.filter((f) => f.dept === activeDept),
+    [allFaculty, activeDept],
+  );
 
   const stats = useMemo(() => {
     const full = faculty.filter((f) => f.hours >= FULL_DAY);
