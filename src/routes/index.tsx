@@ -1,24 +1,300 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { getFaculty, type FacultyRow } from "@/lib/faculty.functions";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: Dashboard,
+  head: () => ({
+    meta: [
+      { title: "Faculty Duty Dashboard | Department Hours Overview" },
+      {
+        name: "description",
+        content:
+          "Live faculty dashboard showing department-wise faculty names, total faculty count, and how many completed 8 hours versus less than 8 hours.",
+      },
+      { property: "og:title", content: "Faculty Duty Dashboard" },
+      {
+        property: "og:description",
+        content:
+          "Department-wise faculty names with total faculty and 8-hour duty completion breakdown.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+const FULL_DAY = 8;
+
+function StatCard({
+  label,
+  value,
+  hint,
+  tone,
+}: {
+  label: string;
+  value: string | number;
+  hint: string;
+  tone: "primary" | "success" | "warning" | "accent";
+}) {
+  const toneRing = {
+    primary: "text-primary",
+    success: "text-success",
+    warning: "text-warning",
+    accent: "text-accent",
+  }[tone];
+
   return (
     <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+      className="rounded-2xl border border-border bg-card p-6"
+      style={{ boxShadow: "var(--shadow-card)" }}
     >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        {label}
+      </p>
+      <p className={`mt-3 text-4xl font-bold tabular-nums ${toneRing}`}>{value}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{hint}</p>
     </div>
+  );
+}
+
+function Dashboard() {
+  const fetchFaculty = useServerFn(getFaculty);
+  const { data, isPending, error } = useQuery({
+    queryKey: ["faculty"],
+    queryFn: () => fetchFaculty(),
+    staleTime: 60_000,
+  });
+
+  const faculty = data?.faculty ?? [];
+
+  const stats = useMemo(() => {
+    const full = faculty.filter((f) => f.hours >= FULL_DAY);
+    const partial = faculty.filter((f) => f.hours < FULL_DAY);
+    const depts = new Map<string, FacultyRow[]>();
+    for (const f of faculty) {
+      const list = depts.get(f.dept) ?? [];
+      list.push(f);
+      depts.set(f.dept, list);
+    }
+    const totalHours = faculty.reduce((s, f) => s + f.hours, 0);
+    return {
+      full,
+      partial,
+      depts: [...depts.entries()].sort((a, b) => b[1].length - a[1].length),
+      avgHours: faculty.length ? totalHours / faculty.length : 0,
+    };
+  }, [faculty]);
+
+  const maxDept = Math.max(1, ...stats.depts.map(([, list]) => list.length));
+
+  return (
+    <main className="min-h-screen bg-background">
+      <header
+        className="px-6 py-14 text-primary-foreground sm:px-10"
+        style={{ background: "var(--gradient-hero)" }}
+      >
+        <div className="mx-auto max-w-6xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-80">
+            Attendance intelligence
+          </p>
+          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+            Faculty Duty Dashboard
+          </h1>
+          <p className="mt-3 max-w-2xl text-base opacity-85">
+            Department-wise faculty roster with total strength and an 8-hour duty completion
+            breakdown, synced live from your attendance sheet.
+          </p>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
+        {error ? (
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
+            Couldn't load the sheet: {(error as Error).message}
+          </div>
+        ) : isPending ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-36 animate-pulse rounded-2xl bg-muted" />
+            ))}
+          </div>
+        ) : (
+          <>
+            <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard
+                label="Total faculty"
+                value={faculty.length}
+                hint={`${stats.depts.length} departments`}
+                tone="primary"
+              />
+              <StatCard
+                label="Worked 8 hours"
+                value={stats.full.length}
+                hint="Full duty completed"
+                tone="success"
+              />
+              <StatCard
+                label="Less than 8 hours"
+                value={stats.partial.length}
+                hint="Short of full duty"
+                tone="warning"
+              />
+              <StatCard
+                label="Average hours"
+                value={stats.avgHours.toFixed(1)}
+                hint="Across all faculty"
+                tone="accent"
+              />
+            </section>
+
+            <section className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+              <div
+                className="rounded-2xl border border-border bg-card p-6"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                <h2 className="text-lg font-semibold text-foreground">Faculty per department</h2>
+                <div className="mt-6 space-y-5">
+                  {stats.depts.map(([dept, list]) => (
+                    <div key={dept}>
+                      <div className="flex items-baseline justify-between text-sm">
+                        <span className="font-semibold text-foreground">{dept}</span>
+                        <span className="tabular-nums text-muted-foreground">
+                          {list.length} faculty
+                        </span>
+                      </div>
+                      <div className="mt-2 h-3 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${(list.length / maxDept) * 100}%`,
+                            background: "var(--gradient-hero)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div
+                className="rounded-2xl border border-border bg-card p-6"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                <h2 className="text-lg font-semibold text-foreground">Duty completion</h2>
+                <div className="mt-6 space-y-6">
+                  {[
+                    {
+                      label: "Completed 8 hours",
+                      count: stats.full.length,
+                      color: "var(--success)",
+                    },
+                    {
+                      label: "Less than 8 hours",
+                      count: stats.partial.length,
+                      color: "var(--warning)",
+                    },
+                  ].map((row) => {
+                    const pct = faculty.length ? (row.count / faculty.length) * 100 : 0;
+                    return (
+                      <div key={row.label}>
+                        <div className="flex items-baseline justify-between text-sm">
+                          <span className="font-medium text-foreground">{row.label}</span>
+                          <span className="tabular-nums text-muted-foreground">
+                            {row.count} · {pct.toFixed(0)}%
+                          </span>
+                        </div>
+                        <div className="mt-2 h-3 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full"
+                            style={{ width: `${pct}%`, background: row.color }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="mt-6 text-sm text-muted-foreground">
+                  A faculty member is counted as full duty at {FULL_DAY} hours or more.
+                </p>
+              </div>
+            </section>
+
+            <section className="mt-10 space-y-8">
+              <h2 className="text-lg font-semibold text-foreground">
+                Department-wise faculty names
+              </h2>
+              {stats.depts.map(([dept, list]) => (
+                <div
+                  key={dept}
+                  className="overflow-hidden rounded-2xl border border-border bg-card"
+                  style={{ boxShadow: "var(--shadow-card)" }}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-secondary/60 px-6 py-4">
+                    <h3 className="text-base font-semibold text-secondary-foreground">{dept}</h3>
+                    <div className="flex gap-2 text-xs font-semibold">
+                      <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                        {list.length} total
+                      </span>
+                      <span className="rounded-full bg-success/12 px-3 py-1 text-success">
+                        {list.filter((f) => f.hours >= FULL_DAY).length} full 8 hrs
+                      </span>
+                      <span className="rounded-full bg-warning/15 px-3 py-1 text-warning-foreground">
+                        {list.filter((f) => f.hours < FULL_DAY).length} under 8 hrs
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                          <th className="px-6 py-3 font-semibold">Faculty</th>
+                          <th className="px-6 py-3 font-semibold">Log in</th>
+                          <th className="px-6 py-3 font-semibold">Log out</th>
+                          <th className="px-6 py-3 font-semibold">Hours</th>
+                          <th className="px-6 py-3 font-semibold">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {list.map((f, i) => {
+                          const fullDay = f.hours >= FULL_DAY;
+                          return (
+                            <tr key={`${f.sno}-${i}`} className="border-t border-border">
+                              <td className="px-6 py-3 font-medium text-foreground">{f.name}</td>
+                              <td className="px-6 py-3 tabular-nums text-muted-foreground">
+                                {f.loginTime}
+                              </td>
+                              <td className="px-6 py-3 tabular-nums text-muted-foreground">
+                                {f.logoutTime}
+                              </td>
+                              <td className="px-6 py-3 font-semibold tabular-nums text-foreground">
+                                {f.hours}
+                              </td>
+                              <td className="px-6 py-3">
+                                <span
+                                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                    fullDay
+                                      ? "bg-success/12 text-success"
+                                      : "bg-warning/15 text-warning-foreground"
+                                  }`}
+                                >
+                                  {fullDay ? "8 hrs" : "< 8 hrs"}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </section>
+          </>
+        )}
+      </div>
+    </main>
   );
 }
