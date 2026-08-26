@@ -143,7 +143,28 @@ function Dashboard() {
           </div>
         ) : (
           <>
-            <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <section
+              className="flex flex-wrap items-center gap-2"
+              aria-label="Department filters"
+            >
+              <FilterChip
+                label="All departments"
+                count={allFaculty.length}
+                active={activeDept === "All"}
+                onClick={() => setActiveDept("All")}
+              />
+              {allDepts.map(([dept, list]) => (
+                <FilterChip
+                  key={dept}
+                  label={dept}
+                  count={list.length}
+                  active={activeDept === dept}
+                  onClick={() => setActiveDept(dept)}
+                />
+              ))}
+            </section>
+
+            <section className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <StatCard
                 label="Total faculty"
                 value={faculty.length}
