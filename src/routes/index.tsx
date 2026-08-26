@@ -309,7 +309,7 @@ function Dashboard() {
               <div className="mt-4">
                 <label
                   htmlFor="faculty-search"
-                  className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                  className="block text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
                 >
                   Search faculty
                 </label>
