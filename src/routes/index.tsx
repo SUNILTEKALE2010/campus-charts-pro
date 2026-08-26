@@ -487,13 +487,16 @@ function Dashboard() {
                             <tr key={`${f.sno}-${i}`} className="border-t border-border">
                               <td className="px-6 py-3 font-medium text-foreground">{f.name}</td>
                               <td className="px-6 py-3 tabular-nums text-muted-foreground">
+                                {f.date || "—"}
+                              </td>
+                              <td className="px-6 py-3 tabular-nums text-muted-foreground">
                                 {f.loginTime}
                               </td>
                               <td className="px-6 py-3 tabular-nums text-muted-foreground">
                                 {f.logoutTime}
                               </td>
                               <td className="px-6 py-3 font-semibold tabular-nums text-foreground">
-                                {f.hours}
+                                {f.hours.toFixed(2)}
                               </td>
                               <td className="px-6 py-3">
                                 <span
