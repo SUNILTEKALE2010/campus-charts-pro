@@ -212,6 +212,52 @@ function Dashboard() {
           </div>
         ) : (
           <>
+            <section className="mb-6" aria-label="Month tabs">
+              <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-border bg-card p-1.5">
+                <MonthTab
+                  label="All months"
+                  active={activeMonth === "All"}
+                  onClick={() => {
+                    setActiveMonth("All");
+                    setActiveDay("All");
+                  }}
+                />
+                {months.map(([key, label]) => (
+                  <MonthTab
+                    key={key}
+                    label={label}
+                    active={activeMonth === key}
+                    onClick={() => {
+                      setActiveMonth(key);
+                      setActiveDay("All");
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Day
+                </span>
+                <DayPill
+                  label="All"
+                  active={activeDay === "All"}
+                  onClick={() => setActiveDay("All")}
+                />
+                {days.map((d) => (
+                  <DayPill
+                    key={d}
+                    label={String(d).padStart(2, "0")}
+                    active={activeDay === String(d)}
+                    onClick={() => setActiveDay(String(d))}
+                  />
+                ))}
+                {days.length === 0 && (
+                  <span className="text-sm text-muted-foreground">No dated entries</span>
+                )}
+              </div>
+            </section>
+
             <section
               className="flex flex-wrap items-center gap-2"
               aria-label="Department filters"
