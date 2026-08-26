@@ -94,6 +94,57 @@ function FilterChip({
   );
 }
 
+function MonthTab({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        active
+          ? "rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors"
+          : "rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+      }
+      style={active ? { background: "var(--gradient-hero)" } : undefined}
+    >
+      {label}
+    </button>
+  );
+}
+
+function DayPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        active
+          ? "min-w-10 rounded-lg border border-primary bg-primary px-3 py-1.5 text-sm font-semibold tabular-nums text-primary-foreground"
+          : "min-w-10 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium tabular-nums text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+      }
+    >
+      {label}
+    </button>
+  );
+}
+
 function Dashboard() {
   const fetchFaculty = useServerFn(getFaculty);
   const { data, isPending, error } = useQuery({
