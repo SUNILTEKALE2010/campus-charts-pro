@@ -18,6 +18,8 @@ export type FacultyRow = {
   monthLabel: string;
   /** Day of month 1-31, or 0 when unparseable */
   day: number;
+  /** Sortable ISO date, e.g. "2026-07-01" ("" when unparseable) */
+  isoDate: string;
 };
 
 const MONTHS = [
