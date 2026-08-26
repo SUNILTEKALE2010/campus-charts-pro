@@ -77,5 +77,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
       dept: (r[5] ?? "—").trim() || "—",
     }));
 
-  return { faculty, updatedAt: new Date().toISOString() };
+  const payload: Payload = { faculty, updatedAt: new Date().toISOString() };
+  cache = { data: payload, at: Date.now() };
+  return payload;
 });
