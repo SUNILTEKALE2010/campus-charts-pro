@@ -154,14 +154,22 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
 
   const faculty: FacultyRow[] = rows
     .filter((r) => (r?.[1] ?? "").trim() !== "")
-    .map((r) => ({
-      sno: r[0] ?? "",
-      name: (r[1] ?? "").trim(),
-      loginTime: r[2] ?? "",
-      logoutTime: r[3] ?? "",
-      hours: Number.parseFloat(r[4] ?? "0") || 0,
-      dept: (r[5] ?? "—").trim() || "—",
-    }));
+    .map((r) => {
+      const date = (r[6] ?? "").trim();
+      const { monthKey, monthLabel, day } = parseDate(date);
+      return {
+        sno: r[0] ?? "",
+        name: (r[1] ?? "").trim(),
+        loginTime: r[2] ?? "",
+        logoutTime: r[3] ?? "",
+        hours: parseHours(r[4] ?? ""),
+        dept: (r[5] ?? "—").trim() || "—",
+        date,
+        monthKey,
+        monthLabel,
+        day,
+      };
+    });
 
   const payload: Payload = { faculty, updatedAt: new Date().toISOString() };
   cache = { data: payload, at: Date.now() };
