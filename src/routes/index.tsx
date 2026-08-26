@@ -183,15 +183,12 @@ function Dashboard() {
     return [...set].sort((a, b) => a - b);
   }, [monthRows]);
 
-  const allFacultyScoped = useMemo(
-    () =>
-      activeDay === "All"
-        ? monthRows
-        : monthRows.filter((f) => String(f.day) === activeDay),
-    [monthRows, activeDay],
-  );
-
-  const allFaculty = allFacultyScoped;
+  const allFaculty = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return monthRows
+      .filter((f) => activeDay === "All" || String(f.day) === activeDay)
+      .filter((f) => !q || f.name.toLowerCase().includes(q));
+  }, [monthRows, activeDay, search]);
 
   const allDepts = useMemo(() => {
     const depts = new Map<string, FacultyRow[]>();
