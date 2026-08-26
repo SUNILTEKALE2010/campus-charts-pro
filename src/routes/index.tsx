@@ -448,6 +448,11 @@ function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground">
                 Department-wise faculty names
               </h2>
+              {stats.depts.length === 0 && (
+                <p className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
+                  No faculty match the current month, day, department, or name search.
+                </p>
+              )}
               {stats.depts.map(([dept, list]) => (
                 <div
                   key={dept}
