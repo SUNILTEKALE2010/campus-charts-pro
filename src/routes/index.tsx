@@ -99,7 +99,12 @@ function Dashboard() {
   const { data, isPending, error } = useQuery({
     queryKey: ["faculty"],
     queryFn: () => fetchFaculty(),
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attempt) => 2000 * 2 ** attempt,
   });
 
   const [activeDept, setActiveDept] = useState<string>("All");
