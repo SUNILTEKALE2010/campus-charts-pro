@@ -8,13 +8,13 @@ export const Route = createFileRoute("/")({
   component: Dashboard,
   head: () => ({
     meta: [
-      { title: "Faculty Duty Dashboard | Department Hours Overview" },
+      { title: "Faculty Management Dashboard | Department Hours Overview" },
       {
         name: "description",
         content:
           "Live faculty dashboard showing department-wise faculty names, total faculty count, and how many completed 8 hours versus less than 8 hours.",
       },
-      { property: "og:title", content: "Faculty Duty Dashboard" },
+      { property: "og:title", content: "Faculty Management Dashboard" },
       {
         property: "og:description",
         content:
@@ -160,7 +160,7 @@ function Dashboard() {
             Attendance intelligence
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Faculty Duty Dashboard
+            Faculty Management Dashboard
           </h1>
           <p className="mt-3 max-w-2xl text-base opacity-85">
             Department-wise faculty roster with total strength and an 8-hour duty completion
