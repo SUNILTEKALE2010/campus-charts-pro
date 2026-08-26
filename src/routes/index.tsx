@@ -94,6 +94,57 @@ function FilterChip({
   );
 }
 
+function MonthTab({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        active
+          ? "rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors"
+          : "rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+      }
+      style={active ? { background: "var(--gradient-hero)" } : undefined}
+    >
+      {label}
+    </button>
+  );
+}
+
+function DayPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        active
+          ? "min-w-10 rounded-lg border border-primary bg-primary px-3 py-1.5 text-sm font-semibold tabular-nums text-primary-foreground"
+          : "min-w-10 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium tabular-nums text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+      }
+    >
+      {label}
+    </button>
+  );
+}
+
 function Dashboard() {
   const fetchFaculty = useServerFn(getFaculty);
   const { data, isPending, error } = useQuery({
@@ -108,8 +159,36 @@ function Dashboard() {
   });
 
   const [activeDept, setActiveDept] = useState<string>("All");
+  const [activeMonth, setActiveMonth] = useState<string>("All");
+  const [activeDay, setActiveDay] = useState<string>("All");
+  const [search, setSearch] = useState("");
 
-  const allFaculty = data?.faculty ?? [];
+  const rows = data?.faculty ?? [];
+
+  const months = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const f of rows) if (f.monthKey) m.set(f.monthKey, f.monthLabel);
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [rows]);
+
+  // Month scope drives which days and departments are offered.
+  const monthRows = useMemo(
+    () => (activeMonth === "All" ? rows : rows.filter((f) => f.monthKey === activeMonth)),
+    [rows, activeMonth],
+  );
+
+  const days = useMemo(() => {
+    const set = new Set<number>();
+    for (const f of monthRows) if (f.day) set.add(f.day);
+    return [...set].sort((a, b) => a - b);
+  }, [monthRows]);
+
+  const allFaculty = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return monthRows
+      .filter((f) => activeDay === "All" || String(f.day) === activeDay)
+      .filter((f) => !q || f.name.toLowerCase().includes(q));
+  }, [monthRows, activeDay, search]);
 
   const allDepts = useMemo(() => {
     const depts = new Map<string, FacultyRow[]>();
@@ -182,6 +261,69 @@ function Dashboard() {
           </div>
         ) : (
           <>
+            <section className="mb-6" aria-label="Month tabs">
+              <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-border bg-card p-1.5">
+                <MonthTab
+                  label="All months"
+                  active={activeMonth === "All"}
+                  onClick={() => {
+                    setActiveMonth("All");
+                    setActiveDay("All");
+                  }}
+                />
+                {months.map(([key, label]) => (
+                  <MonthTab
+                    key={key}
+                    label={label}
+                    active={activeMonth === key}
+                    onClick={() => {
+                      setActiveMonth(key);
+                      setActiveDay("All");
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Day
+                </span>
+                <DayPill
+                  label="All"
+                  active={activeDay === "All"}
+                  onClick={() => setActiveDay("All")}
+                />
+                {days.map((d) => (
+                  <DayPill
+                    key={d}
+                    label={String(d).padStart(2, "0")}
+                    active={activeDay === String(d)}
+                    onClick={() => setActiveDay(String(d))}
+                  />
+                ))}
+                {days.length === 0 && (
+                  <span className="text-sm text-muted-foreground">No dated entries</span>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="faculty-search"
+                  className="block text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                >
+                  Search faculty
+                </label>
+                <input
+                  id="faculty-search"
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Type a faculty name…"
+                  className="mt-2 w-full max-w-sm rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+              </div>
+            </section>
+
             <section
               className="flex flex-wrap items-center gap-2"
               aria-label="Department filters"
@@ -306,6 +448,11 @@ function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground">
                 Department-wise faculty names
               </h2>
+              {stats.depts.length === 0 && (
+                <p className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
+                  No faculty match the current month, day, department, or name search.
+                </p>
+              )}
               {stats.depts.map(([dept, list]) => (
                 <div
                   key={dept}
@@ -330,8 +477,9 @@ function Dashboard() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                          <th className="px-6 py-3 font-semibold">Faculty</th>
-                          <th className="px-6 py-3 font-semibold">Log in</th>
+                           <th className="px-6 py-3 font-semibold">Faculty</th>
+                           <th className="px-6 py-3 font-semibold">Date</th>
+                           <th className="px-6 py-3 font-semibold">Log in</th>
                           <th className="px-6 py-3 font-semibold">Log out</th>
                           <th className="px-6 py-3 font-semibold">Hours</th>
                           <th className="px-6 py-3 font-semibold">Status</th>
@@ -344,13 +492,16 @@ function Dashboard() {
                             <tr key={`${f.sno}-${i}`} className="border-t border-border">
                               <td className="px-6 py-3 font-medium text-foreground">{f.name}</td>
                               <td className="px-6 py-3 tabular-nums text-muted-foreground">
+                                {f.date || "—"}
+                              </td>
+                              <td className="px-6 py-3 tabular-nums text-muted-foreground">
                                 {f.loginTime}
                               </td>
                               <td className="px-6 py-3 tabular-nums text-muted-foreground">
                                 {f.logoutTime}
                               </td>
                               <td className="px-6 py-3 font-semibold tabular-nums text-foreground">
-                                {f.hours}
+                                {f.hours.toFixed(2)}
                               </td>
                               <td className="px-6 py-3">
                                 <span

@@ -10,7 +10,93 @@ export type FacultyRow = {
   logoutTime: string;
   hours: number;
   dept: string;
+  /** Raw date text from the sheet, e.g. "01-Jul-2026" */
+  date: string;
+  /** Sortable month key, e.g. "2026-07" ("" when unparseable) */
+  monthKey: string;
+  /** Human month label, e.g. "Jul 2026" */
+  monthLabel: string;
+  /** Day of month 1-31, or 0 when unparseable */
+  day: number;
 };
+
+const MONTHS = [
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
+];
+
+const MONTH_LABELS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+/** Parses "01-Jul-2026", "1/7/2026" or "2026-07-01" into parts. */
+function parseDate(raw: string) {
+  const text = (raw ?? "").trim();
+  if (!text) return { monthKey: "", monthLabel: "—", day: 0 };
+
+  let day = 0;
+  let monthIdx = -1;
+  let year = 0;
+
+  const named = text.match(/^(\d{1,2})[-/\s]([A-Za-z]{3,})[-/\s](\d{2,4})$/);
+  const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  const numeric = text.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
+
+  if (named) {
+    day = Number(named[1]);
+    monthIdx = MONTHS.indexOf(named[2]!.slice(0, 3).toLowerCase());
+    year = Number(named[3]);
+  } else if (iso) {
+    year = Number(iso[1]);
+    monthIdx = Number(iso[2]) - 1;
+    day = Number(iso[3]);
+  } else if (numeric) {
+    day = Number(numeric[1]);
+    monthIdx = Number(numeric[2]) - 1;
+    year = Number(numeric[3]);
+  }
+
+  if (monthIdx < 0 || monthIdx > 11 || !year) return { monthKey: "", monthLabel: "—", day: 0 };
+  if (year < 100) year += 2000;
+
+  return {
+    monthKey: `${year}-${String(monthIdx + 1).padStart(2, "0")}`,
+    monthLabel: `${MONTH_LABELS[monthIdx]} ${year}`,
+    day,
+  };
+}
+
+/** Parses "8 hrs 50 mins", "8.5" or "8" into decimal hours. */
+function parseHours(raw: string): number {
+  const text = (raw ?? "").trim();
+  if (!text) return 0;
+  const composite = text.match(/(\d+(?:\.\d+)?)\s*h\w*(?:\s*(\d+)\s*m)?/i);
+  if (composite) {
+    return Number(composite[1]) + (composite[2] ? Number(composite[2]) / 60 : 0);
+  }
+  return Number.parseFloat(text) || 0;
+}
 
 type Payload = { faculty: FacultyRow[]; updatedAt: string };
 
@@ -68,14 +154,22 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
 
   const faculty: FacultyRow[] = rows
     .filter((r) => (r?.[1] ?? "").trim() !== "")
-    .map((r) => ({
-      sno: r[0] ?? "",
-      name: (r[1] ?? "").trim(),
-      loginTime: r[2] ?? "",
-      logoutTime: r[3] ?? "",
-      hours: Number.parseFloat(r[4] ?? "0") || 0,
-      dept: (r[5] ?? "—").trim() || "—",
-    }));
+    .map((r) => {
+      const date = (r[6] ?? "").trim();
+      const { monthKey, monthLabel, day } = parseDate(date);
+      return {
+        sno: r[0] ?? "",
+        name: (r[1] ?? "").trim(),
+        loginTime: r[2] ?? "",
+        logoutTime: r[3] ?? "",
+        hours: parseHours(r[4] ?? ""),
+        dept: (r[5] ?? "—").trim() || "—",
+        date,
+        monthKey,
+        monthLabel,
+        day,
+      };
+    });
 
   const payload: Payload = { faculty, updatedAt: new Date().toISOString() };
   cache = { data: payload, at: Date.now() };
