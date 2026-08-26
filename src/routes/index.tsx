@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getFaculty, type FacultyRow } from "@/lib/faculty.functions";
 
 export const Route = createFileRoute("/")({
@@ -60,6 +60,40 @@ function StatCard({
   );
 }
 
+function FilterChip({
+  label,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        active
+          ? "inline-flex items-center gap-2 rounded-full border border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors"
+          : "inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+      }
+    >
+      <span>{label}</span>
+      <span
+        className={`rounded-full px-2 py-0.5 text-xs tabular-nums ${
+          active ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
+        }`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
 function Dashboard() {
   const fetchFaculty = useServerFn(getFaculty);
   const { data, isPending, error } = useQuery({
@@ -68,7 +102,27 @@ function Dashboard() {
     staleTime: 60_000,
   });
 
-  const faculty = data?.faculty ?? [];
+  const [activeDept, setActiveDept] = useState<string>("All");
+
+  const allFaculty = data?.faculty ?? [];
+
+  const allDepts = useMemo(() => {
+    const depts = new Map<string, FacultyRow[]>();
+    for (const f of allFaculty) {
+      const list = depts.get(f.dept) ?? [];
+      list.push(f);
+      depts.set(f.dept, list);
+    }
+    return [...depts.entries()].sort((a, b) => b[1].length - a[1].length);
+  }, [allFaculty]);
+
+  const faculty = useMemo(
+    () =>
+      activeDept === "All"
+        ? allFaculty
+        : allFaculty.filter((f) => f.dept === activeDept),
+    [allFaculty, activeDept],
+  );
 
   const stats = useMemo(() => {
     const full = faculty.filter((f) => f.hours >= FULL_DAY);
@@ -123,7 +177,28 @@ function Dashboard() {
           </div>
         ) : (
           <>
-            <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <section
+              className="flex flex-wrap items-center gap-2"
+              aria-label="Department filters"
+            >
+              <FilterChip
+                label="All departments"
+                count={allFaculty.length}
+                active={activeDept === "All"}
+                onClick={() => setActiveDept("All")}
+              />
+              {allDepts.map(([dept, list]) => (
+                <FilterChip
+                  key={dept}
+                  label={dept}
+                  count={list.length}
+                  active={activeDept === dept}
+                  onClick={() => setActiveDept(dept)}
+                />
+              ))}
+            </section>
+
+            <section className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <StatCard
                 label="Total faculty"
                 value={faculty.length}
