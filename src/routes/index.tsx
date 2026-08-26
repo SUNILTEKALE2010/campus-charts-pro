@@ -108,8 +108,38 @@ function Dashboard() {
   });
 
   const [activeDept, setActiveDept] = useState<string>("All");
+  const [activeMonth, setActiveMonth] = useState<string>("All");
+  const [activeDay, setActiveDay] = useState<string>("All");
 
-  const allFaculty = data?.faculty ?? [];
+  const rows = data?.faculty ?? [];
+
+  const months = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const f of rows) if (f.monthKey) m.set(f.monthKey, f.monthLabel);
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [rows]);
+
+  // Month scope drives which days and departments are offered.
+  const monthRows = useMemo(
+    () => (activeMonth === "All" ? rows : rows.filter((f) => f.monthKey === activeMonth)),
+    [rows, activeMonth],
+  );
+
+  const days = useMemo(() => {
+    const set = new Set<number>();
+    for (const f of monthRows) if (f.day) set.add(f.day);
+    return [...set].sort((a, b) => a - b);
+  }, [monthRows]);
+
+  const allFacultyScoped = useMemo(
+    () =>
+      activeDay === "All"
+        ? monthRows
+        : monthRows.filter((f) => String(f.day) === activeDay),
+    [monthRows, activeDay],
+  );
+
+  const allFaculty = allFacultyScoped;
 
   const allDepts = useMemo(() => {
     const depts = new Map<string, FacultyRow[]>();
