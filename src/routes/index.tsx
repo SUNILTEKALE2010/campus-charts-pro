@@ -161,6 +161,7 @@ function Dashboard() {
   const [activeDept, setActiveDept] = useState<string>("All");
   const [activeMonth, setActiveMonth] = useState<string>("All");
   const [activeDay, setActiveDay] = useState<string>("All");
+  const [search, setSearch] = useState("");
 
   const rows = data?.faculty ?? [];
 
