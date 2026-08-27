@@ -83,7 +83,7 @@ function TimetablePage() {
       }
     }
     return out;
-  }, [sections, search]);
+  }, [sections, search, activeSection, activeDay]);
 
   const visible = useMemo(
     () =>
