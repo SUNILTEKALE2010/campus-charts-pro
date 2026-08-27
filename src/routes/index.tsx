@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getFaculty, type FacultyRow } from "@/lib/faculty.functions";
+import { DashboardTabs } from "@/components/DashboardTabs";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -249,6 +250,9 @@ function Dashboard() {
       </header>
 
       <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
+        <div className="mb-6">
+          <DashboardTabs />
+        </div>
         {error ? (
           <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
             Couldn't load the sheet: {(error as Error).message}

@@ -55,7 +55,7 @@ const MONTH_LABELS = [
 /** Parses "01-Jul-2026", "1/7/2026" or "2026-07-01" into parts. */
 function parseDate(raw: string) {
   const text = (raw ?? "").trim();
-  if (!text) return { monthKey: "", monthLabel: "—", day: 0 };
+  if (!text) return { monthKey: "", monthLabel: "—", day: 0, isoDate: "" };
 
   let day = 0;
   let monthIdx = -1;
@@ -79,13 +79,16 @@ function parseDate(raw: string) {
     year = Number(numeric[3]);
   }
 
-  if (monthIdx < 0 || monthIdx > 11 || !year) return { monthKey: "", monthLabel: "—", day: 0 };
+  if (monthIdx < 0 || monthIdx > 11 || !year)
+    return { monthKey: "", monthLabel: "—", day: 0, isoDate: "" };
   if (year < 100) year += 2000;
 
+  const mm = String(monthIdx + 1).padStart(2, "0");
   return {
-    monthKey: `${year}-${String(monthIdx + 1).padStart(2, "0")}`,
+    monthKey: `${year}-${mm}`,
     monthLabel: `${MONTH_LABELS[monthIdx]} ${year}`,
     day,
+    isoDate: `${year}-${mm}-${String(day).padStart(2, "0")}`,
   };
 }
 
@@ -158,7 +161,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
     .filter((r) => (r?.[1] ?? "").trim() !== "")
     .map((r) => {
       const date = (r[6] ?? "").trim();
-      const { monthKey, monthLabel, day } = parseDate(date);
+      const { monthKey, monthLabel, day, isoDate } = parseDate(date);
       return {
         sno: r[0] ?? "",
         name: (r[1] ?? "").trim(),
@@ -170,6 +173,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
         monthKey,
         monthLabel,
         day,
+        isoDate,
       };
     });
 
