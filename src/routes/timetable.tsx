@@ -65,7 +65,9 @@ function TimetablePage() {
     if (!q) return [];
     const out: Hit[] = [];
     for (const s of sections) {
+      if (activeSection !== "All" && s.section !== activeSection) continue;
       for (const d of s.days) {
+        if (activeDay !== "All" && d.day !== activeDay) continue;
         for (const slot of d.slots) {
           if (slot.faculty && slot.faculty.toLowerCase().includes(q)) {
             out.push({
