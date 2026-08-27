@@ -250,6 +250,9 @@ function Dashboard() {
       </header>
 
       <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
+        <div className="mb-6">
+          <DashboardTabs />
+        </div>
         {error ? (
           <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
             Couldn't load the sheet: {(error as Error).message}
