@@ -55,7 +55,7 @@ const MONTH_LABELS = [
 /** Parses "01-Jul-2026", "1/7/2026" or "2026-07-01" into parts. */
 function parseDate(raw: string) {
   const text = (raw ?? "").trim();
-  if (!text) return { monthKey: "", monthLabel: "—", day: 0 };
+  if (!text) return { monthKey: "", monthLabel: "—", day: 0, isoDate: "" };
 
   let day = 0;
   let monthIdx = -1;
