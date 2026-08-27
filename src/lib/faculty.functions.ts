@@ -161,7 +161,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
     .filter((r) => (r?.[1] ?? "").trim() !== "")
     .map((r) => {
       const date = (r[6] ?? "").trim();
-      const { monthKey, monthLabel, day } = parseDate(date);
+      const { monthKey, monthLabel, day, isoDate } = parseDate(date);
       return {
         sno: r[0] ?? "",
         name: (r[1] ?? "").trim(),
