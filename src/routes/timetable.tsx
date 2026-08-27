@@ -164,10 +164,19 @@ function TimetablePage() {
                     <h2 className="text-base font-semibold text-secondary-foreground">
                       Where is “{search.trim()}”?
                     </h2>
+                    {(activeSection !== "All" || activeDay !== "All") && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Filtered to {activeSection === "All" ? "all sections" : activeSection} ·{" "}
+                        {activeDay === "All" ? "all days" : activeDay}
+                      </p>
+                    )}
                   </div>
                   {hits.length === 0 ? (
                     <p className="px-6 py-5 text-sm text-muted-foreground">
-                      No class found for that faculty name in the time table.
+                      No class found for that faculty name
+                      {activeSection !== "All" ? ` in ${activeSection}` : ""}
+                      {activeDay !== "All" ? ` on ${activeDay}` : ""}. Try another section or day
+                      filter below.
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
