@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getFaculty, type FacultyRow } from "@/lib/faculty.functions";
+import { DashboardTabs } from "@/components/DashboardTabs";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
