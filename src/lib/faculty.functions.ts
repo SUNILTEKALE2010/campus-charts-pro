@@ -79,13 +79,16 @@ function parseDate(raw: string) {
     year = Number(numeric[3]);
   }
 
-  if (monthIdx < 0 || monthIdx > 11 || !year) return { monthKey: "", monthLabel: "—", day: 0 };
+  if (monthIdx < 0 || monthIdx > 11 || !year)
+    return { monthKey: "", monthLabel: "—", day: 0, isoDate: "" };
   if (year < 100) year += 2000;
 
+  const mm = String(monthIdx + 1).padStart(2, "0");
   return {
-    monthKey: `${year}-${String(monthIdx + 1).padStart(2, "0")}`,
+    monthKey: `${year}-${mm}`,
     monthLabel: `${MONTH_LABELS[monthIdx]} ${year}`,
     day,
+    isoDate: `${year}-${mm}-${String(day).padStart(2, "0")}`,
   };
 }
 
