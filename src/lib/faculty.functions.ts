@@ -173,6 +173,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
         monthKey,
         monthLabel,
         day,
+        isoDate,
       };
     });
 
