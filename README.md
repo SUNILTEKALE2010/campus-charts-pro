@@ -1,14 +1,19 @@
-# Welcome to your Lovable project
+# Faculty Insights Dashboard (73)
+
+This is my sheet id :1-eV-RVBO4g-pFMhp0xuos7ge-dAleWpjfo1Q4nbQjd0
+CREATE A BEAUTIFUL DASJBOARD TO SHOW THE NAME OF THE FACULTY DEPTWISE AND TOTAL FACULTY. ALSO SHOW HOW MANY WERE WORKING FOR 8 HRS AND HOW MANY WORKED FOR LESS TAHN 8 HOURS
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://campus-charts-pro.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/6c475d93-ffcc-4a58-a50a-fffad98730d7).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +25,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
