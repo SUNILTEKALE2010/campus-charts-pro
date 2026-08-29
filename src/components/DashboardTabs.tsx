@@ -4,6 +4,7 @@ const TABS = [
   { to: "/", label: "Attendance" },
   { to: "/timetable", label: "Time table" },
   { to: "/performance", label: "Marks" },
+  { to: "/student-attendance", label: "Stud-Attendance" },
 ] as const;
 
 export function DashboardTabs() {
