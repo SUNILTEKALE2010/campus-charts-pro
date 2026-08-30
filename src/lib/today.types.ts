@@ -2,6 +2,9 @@ export type TodayRow = {
   dept: string;
   htno: string;
   status: "PRESENT" | "ABSENT";
+  address: string;
+  phone: string;
+  altPhone: string;
 };
 
 export type TodayDeptStats = {
