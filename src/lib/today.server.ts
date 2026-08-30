@@ -16,10 +16,16 @@ export function parseToday(values: string[][]): {
     const raw = cells[2] ?? "";
     if (!dept || !htno || !raw) continue;
 
+    const clean = (v: string, header: string) =>
+      !v || v.toUpperCase() === header ? "" : v;
+
     students.push({
       dept,
       htno,
       status: /^p/i.test(raw) ? "PRESENT" : "ABSENT",
+      address: clean(cells[3] ?? "", "ADDRESS"),
+      phone: clean(cells[4] ?? "", "PHNO"),
+      altPhone: clean(cells[5] ?? "", "ALTERNATE PHNO"),
     });
   }
 
