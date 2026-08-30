@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as StudentAttendanceRouteImport } from './routes/student-attendance'
 import { Route as TimetableRouteImport } from './routes/timetable'
+import { Route as TodayAttendanceRouteImport } from './routes/today-attendance'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const TimetableRoute = TimetableRouteImport.update({
   path: '/timetable',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TodayAttendanceRoute = TodayAttendanceRouteImport.update({
+  id: '/today-attendance',
+  path: '/today-attendance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/performance': typeof PerformanceRoute
   '/student-attendance': typeof StudentAttendanceRoute
   '/timetable': typeof TimetableRoute
+  '/today-attendance': typeof TodayAttendanceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/performance': typeof PerformanceRoute
   '/student-attendance': typeof StudentAttendanceRoute
   '/timetable': typeof TimetableRoute
+  '/today-attendance': typeof TodayAttendanceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,30 @@ export interface FileRoutesById {
   '/performance': typeof PerformanceRoute
   '/student-attendance': typeof StudentAttendanceRoute
   '/timetable': typeof TimetableRoute
+  '/today-attendance': typeof TodayAttendanceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/performance' | '/student-attendance' | '/timetable'
+  fullPaths:
+    | '/'
+    | '/performance'
+    | '/student-attendance'
+    | '/timetable'
+    | '/today-attendance'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/performance' | '/student-attendance' | '/timetable'
-  id: '__root__' | '/' | '/performance' | '/student-attendance' | '/timetable'
+  to:
+    | '/'
+    | '/performance'
+    | '/student-attendance'
+    | '/timetable'
+    | '/today-attendance'
+  id:
+    | '__root__'
+    | '/'
+    | '/performance'
+    | '/student-attendance'
+    | '/timetable'
+    | '/today-attendance'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +92,7 @@ export interface RootRouteChildren {
   PerformanceRoute: typeof PerformanceRoute
   StudentAttendanceRoute: typeof StudentAttendanceRoute
   TimetableRoute: typeof TimetableRoute
+  TodayAttendanceRoute: typeof TodayAttendanceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TimetableRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/today-attendance': {
+      id: '/today-attendance'
+      path: '/today-attendance'
+      fullPath: '/today-attendance'
+      preLoaderRoute: typeof TodayAttendanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerformanceRoute: PerformanceRoute,
   StudentAttendanceRoute: StudentAttendanceRoute,
   TimetableRoute: TimetableRoute,
+  TodayAttendanceRoute: TodayAttendanceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
