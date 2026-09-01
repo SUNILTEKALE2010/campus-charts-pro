@@ -112,33 +112,8 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Photo({
-  student,
-  size,
-}: {
-  student: TodayRow;
-  size: "sm" | "lg";
-}) {
-  const box =
-    size === "lg"
-      ? "h-24 w-24 rounded-2xl text-lg"
-      : "h-10 w-10 rounded-full text-[11px]";
-  const initials = student.htno.slice(-3);
-  return student.photo ? (
-    <img
-      src={student.photo}
-      alt={`Photo of student ${student.htno}`}
-      loading="lazy"
-      className={`${box} shrink-0 border border-border object-cover`}
-    />
-  ) : (
-    <span
-      aria-hidden="true"
-      className={`${box} inline-flex shrink-0 items-center justify-center border border-border bg-secondary font-bold tabular-nums text-muted-foreground`}
-    >
-      {initials}
-    </span>
-  );
+function Photo({ student, size }: { student: TodayRow; size: "sm" | "lg" }) {
+  return <StudentPhoto htno={student.htno} photo={student.photo} size={size} />;
 }
 
 function StudentCard({ student }: { student: TodayRow }) {
