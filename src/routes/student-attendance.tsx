@@ -4,7 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { getStudentAttendance } from "@/lib/attendance.functions";
+import { getTodayAttendance } from "@/lib/today.functions";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { StudentPhoto } from "@/components/StudentPhoto";
 
 export const Route = createFileRoute("/student-attendance")({
   component: StudentAttendance,
