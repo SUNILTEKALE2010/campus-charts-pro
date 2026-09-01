@@ -447,6 +447,7 @@ function TodayAttendance() {
                       <table className="w-full min-w-[720px] text-left text-sm">
                         <thead className="bg-secondary/60 text-xs uppercase tracking-wide text-muted-foreground">
                           <tr>
+                            <th className="px-5 py-3">Photo</th>
                             <th className="px-5 py-3">Hall ticket no.</th>
                             <th className="px-5 py-3">Status</th>
                             <th className="px-5 py-3">Phone</th>
@@ -457,6 +458,9 @@ function TodayAttendance() {
                         <tbody>
                           {deptRows.map((r) => (
                             <tr key={r.htno} className="border-t border-border/70">
+                              <td className="px-5 py-3">
+                                <Photo student={r} size="sm" />
+                              </td>
                               <td className="px-5 py-3 font-semibold text-foreground">{r.htno}</td>
                               <td className="px-5 py-3">
                                 <StatusBadge status={r.status} />
