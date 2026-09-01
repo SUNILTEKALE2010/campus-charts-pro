@@ -112,14 +112,47 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+function Photo({
+  student,
+  size,
+}: {
+  student: TodayRow;
+  size: "sm" | "lg";
+}) {
+  const box =
+    size === "lg"
+      ? "h-24 w-24 rounded-2xl text-lg"
+      : "h-10 w-10 rounded-full text-[11px]";
+  const initials = student.htno.slice(-3);
+  return student.photo ? (
+    <img
+      src={student.photo}
+      alt={`Photo of student ${student.htno}`}
+      loading="lazy"
+      className={`${box} shrink-0 border border-border object-cover`}
+    />
+  ) : (
+    <span
+      aria-hidden="true"
+      className={`${box} inline-flex shrink-0 items-center justify-center border border-border bg-secondary font-bold tabular-nums text-muted-foreground`}
+    >
+      {initials}
+    </span>
+  );
+}
+
 function StudentCard({ student }: { student: TodayRow }) {
   return (
     <div
       className="overflow-hidden rounded-2xl border border-primary/40 bg-card"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-        <h3 className="text-lg font-bold text-foreground">{student.htno}</h3>
+      <div className="flex flex-wrap items-center gap-4 px-5 py-4">
+        <Photo student={student} size="lg" />
+        <div className="min-w-0 flex-1">
+          <h3 className="text-lg font-bold text-foreground">{student.htno}</h3>
+          <p className="text-sm text-muted-foreground">{student.dept}</p>
+        </div>
         <StatusBadge status={student.status} />
       </div>
       <DetailRow label="Department" value={student.dept} />
@@ -130,6 +163,7 @@ function StudentCard({ student }: { student: TodayRow }) {
     </div>
   );
 }
+
 
 function TodayAttendance() {
   const fetchToday = useServerFn(getTodayAttendance);
