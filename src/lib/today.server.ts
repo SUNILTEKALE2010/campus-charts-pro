@@ -1,5 +1,18 @@
 import type { TodayDeptStats, TodayRow } from "./today.types";
 
+/** Accepts a plain URL, an =IMAGE("url") formula or a Google Drive share link. */
+function normalizePhoto(value: string): string {
+  if (!value) return "";
+  const fromFormula = value.match(/^=?\s*IMAGE\(\s*"([^"]+)"/i)?.[1];
+  const url = (fromFormula ?? value).trim();
+  const driveId =
+    url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)?.[1] ??
+    url.match(/[?&]id=([\w-]+)/)?.[1];
+  if (driveId) return `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+
 export function parseToday(values: string[][]): {
   students: TodayRow[];
   depts: TodayDeptStats[];
@@ -26,6 +39,7 @@ export function parseToday(values: string[][]): {
       address: clean(cells[3] ?? "", "ADDRESS"),
       phone: clean(cells[4] ?? "", "PHNO"),
       altPhone: clean(cells[5] ?? "", "ALTERNATE PHNO"),
+      photo: normalizePhoto(clean(cells[6] ?? "", "PHOTO")),
     });
   }
 

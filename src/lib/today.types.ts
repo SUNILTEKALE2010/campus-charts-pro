@@ -5,6 +5,7 @@ export type TodayRow = {
   address: string;
   phone: string;
   altPhone: string;
+  photo: string;
 };
 
 export type TodayDeptStats = {
