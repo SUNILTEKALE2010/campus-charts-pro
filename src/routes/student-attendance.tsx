@@ -172,6 +172,23 @@ function StudentAttendance() {
   const [activeDept, setActiveDept] = useState("All");
   const [htno, setHtno] = useState("");
 
+  const fetchToday = useServerFn(getTodayAttendance);
+  const { data: today } = useQuery({
+    queryKey: ["today-attendance"],
+    queryFn: () => fetchToday(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+  });
+
+  const photoByHtno = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of today?.students ?? []) {
+      if (s.photo) map.set(s.htno.toUpperCase(), s.photo);
+    }
+    return map;
+  }, [today]);
+
   const students = data?.students ?? [];
   const depts = data?.depts ?? [];
   const monthLabels = data?.monthLabels ?? [];
