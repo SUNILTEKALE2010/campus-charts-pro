@@ -4,7 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { getStudentAttendance } from "@/lib/attendance.functions";
+import { getTodayAttendance } from "@/lib/today.functions";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { StudentPhoto } from "@/components/StudentPhoto";
 
 export const Route = createFileRoute("/student-attendance")({
   component: StudentAttendance,
@@ -172,6 +174,23 @@ function StudentAttendance() {
   const [activeDept, setActiveDept] = useState("All");
   const [htno, setHtno] = useState("");
 
+  const fetchToday = useServerFn(getTodayAttendance);
+  const { data: today } = useQuery({
+    queryKey: ["today-attendance"],
+    queryFn: () => fetchToday(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+  });
+
+  const photoByHtno = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of today?.students ?? []) {
+      if (s.photo) map.set(s.htno.toUpperCase(), s.photo);
+    }
+    return map;
+  }, [today]);
+
   const students = data?.students ?? [];
   const depts = data?.depts ?? [];
   const monthLabels = data?.monthLabels ?? [];
@@ -333,6 +352,7 @@ function StudentAttendance() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                          <th className="px-4 py-3 font-semibold">Photo</th>
                           <th className="px-4 py-3 font-semibold">HT No</th>
                           <th className="px-4 py-3 font-semibold">Dept</th>
                           <th className="px-4 py-3 font-semibold">Total days</th>
@@ -342,6 +362,12 @@ function StudentAttendance() {
                       <tbody>
                         {condonationList.map((s) => (
                           <tr key={s.htno} className="border-t border-border">
+                            <td className="px-4 py-3">
+                              <StudentPhoto
+                                htno={s.htno}
+                                photo={photoByHtno.get(s.htno.toUpperCase()) ?? ""}
+                              />
+                            </td>
                             <td className="px-4 py-3 font-medium text-foreground">{s.htno}</td>
                             <td className="px-4 py-3 text-muted-foreground">{s.dept}</td>
                             <td className="px-4 py-3 tabular-nums text-muted-foreground">
@@ -396,7 +422,8 @@ function StudentAttendance() {
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                              <th className="px-6 py-3 font-semibold">HT No</th>
+                              <th className="px-6 py-3 font-semibold">Photo</th>
+                              <th className="px-4 py-3 font-semibold">HT No</th>
                               {monthLabels.map((m) => (
                                 <th key={m} className="px-4 py-3 font-semibold">
                                   {m}
@@ -410,7 +437,13 @@ function StudentAttendance() {
                           <tbody>
                             {list.map((s) => (
                               <tr key={s.htno} className="border-t border-border">
-                                <td className="px-6 py-3 font-medium text-foreground">{s.htno}</td>
+                                <td className="px-6 py-3">
+                                  <StudentPhoto
+                                    htno={s.htno}
+                                    photo={photoByHtno.get(s.htno.toUpperCase()) ?? ""}
+                                  />
+                                </td>
+                                <td className="px-4 py-3 font-medium text-foreground">{s.htno}</td>
                                 {s.months.map((m) => (
                                   <td
                                     key={m.label}

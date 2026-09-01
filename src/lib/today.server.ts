@@ -8,7 +8,7 @@ function normalizePhoto(value: string): string {
   const driveId =
     url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)?.[1] ??
     url.match(/[?&]id=([\w-]+)/)?.[1];
-  if (driveId) return `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
+  if (driveId) return `https://lh3.googleusercontent.com/d/${driveId}=w400`;
   return /^https?:\/\//i.test(url) ? url : "";
 }
 
