@@ -352,6 +352,7 @@ function StudentAttendance() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                          <th className="px-4 py-3 font-semibold">Photo</th>
                           <th className="px-4 py-3 font-semibold">HT No</th>
                           <th className="px-4 py-3 font-semibold">Dept</th>
                           <th className="px-4 py-3 font-semibold">Total days</th>
@@ -361,6 +362,12 @@ function StudentAttendance() {
                       <tbody>
                         {condonationList.map((s) => (
                           <tr key={s.htno} className="border-t border-border">
+                            <td className="px-4 py-3">
+                              <StudentPhoto
+                                htno={s.htno}
+                                photo={photoByHtno.get(s.htno.toUpperCase()) ?? ""}
+                              />
+                            </td>
                             <td className="px-4 py-3 font-medium text-foreground">{s.htno}</td>
                             <td className="px-4 py-3 text-muted-foreground">{s.dept}</td>
                             <td className="px-4 py-3 tabular-nums text-muted-foreground">
