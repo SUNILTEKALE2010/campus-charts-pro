@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { getTodayAttendance } from "@/lib/today.functions";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { StudentPhoto } from "@/components/StudentPhoto";
 import type { TodayRow } from "@/lib/today.types";
 
 export const Route = createFileRoute("/today-attendance")({
