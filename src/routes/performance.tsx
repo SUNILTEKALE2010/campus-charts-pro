@@ -16,6 +16,8 @@ import {
   YAxis,
 } from "recharts";
 import { getPerformance } from "@/lib/performance.functions";
+import { getTodayAttendance } from "@/lib/today.functions";
+import { StudentPhoto } from "@/components/StudentPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
 
 export const Route = createFileRoute("/performance")({
@@ -198,6 +200,25 @@ function Performance() {
     retry: 2,
     retryDelay: (attempt) => 2000 * 2 ** attempt,
   });
+
+  const fetchToday = useServerFn(getTodayAttendance);
+  const { data: today } = useQuery({
+    queryKey: ["today-attendance"],
+    queryFn: () => fetchToday(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
+  });
+
+  const photoByHtno = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of today?.students ?? []) {
+      if (s.photo) map.set(s.htno.toUpperCase(), s.photo);
+    }
+    return map;
+  }, [today]);
 
   const [view, setView] = useState<"dept" | "faculty">("dept");
   const [activeDept, setActiveDept] = useState("All");
@@ -512,7 +533,8 @@ function Performance() {
                             <table className="w-full text-sm">
                               <thead>
                                 <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                                  <th className="px-6 py-3 font-semibold">HT No</th>
+                                  <th className="px-6 py-3 font-semibold">Photo</th>
+                                  <th className="px-4 py-3 font-semibold">HT No</th>
                                   {d.subjectMeta.map((m) => (
                                     <th key={m.subject} className="px-4 py-3 font-semibold">
                                       {m.subject}
@@ -528,9 +550,16 @@ function Performance() {
                               <tbody>
                                 {list.map((s) => (
                                   <tr key={s.htno} className="border-t border-border">
-                                    <td className="px-6 py-3 font-medium text-foreground">
+                                    <td className="px-6 py-3">
+                                      <StudentPhoto
+                                        htno={s.htno}
+                                        photo={photoByHtno.get(s.htno.toUpperCase()) ?? ""}
+                                      />
+                                    </td>
+                                    <td className="px-4 py-3 font-medium text-foreground">
                                       {s.htno}
                                     </td>
+
                                     {s.subjects.map((sub) => (
                                       <td
                                         key={sub.subject}
