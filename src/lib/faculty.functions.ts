@@ -20,7 +20,20 @@ export type FacultyRow = {
   day: number;
   /** Sortable ISO date, e.g. "2026-07-01" ("" when unparseable) */
   isoDate: string;
+  /** Direct image URL for the faculty photo ("" when missing) */
+  photo: string;
 };
+
+/** Accepts a plain URL, an =IMAGE("url") formula or a Google Drive share link. */
+function normalizePhoto(value: string): string {
+  if (!value) return "";
+  const fromFormula = value.match(/^=?\s*IMAGE\(\s*"([^"]+)"/i)?.[1];
+  const url = (fromFormula ?? value).trim();
+  const driveId =
+    url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)?.[1] ?? url.match(/[?&]id=([\w-]+)/)?.[1];
+  if (driveId) return `https://lh3.googleusercontent.com/d/${driveId}=w400`;
+  return /^https?:\/\//i.test(url) ? url : "";
+}
 
 const MONTHS = [
   "jan",
@@ -174,6 +187,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
         monthLabel,
         day,
         isoDate,
+        photo: normalizePhoto((r[7] ?? "").trim()),
       };
     });
 
