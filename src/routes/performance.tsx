@@ -16,6 +16,8 @@ import {
   YAxis,
 } from "recharts";
 import { getPerformance } from "@/lib/performance.functions";
+import { getTodayAttendance } from "@/lib/today.functions";
+import { StudentPhoto } from "@/components/StudentPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
 
 export const Route = createFileRoute("/performance")({
