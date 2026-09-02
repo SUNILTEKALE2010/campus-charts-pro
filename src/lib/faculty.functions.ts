@@ -187,6 +187,7 @@ export const getFaculty = createServerFn({ method: "GET" }).handler(async (): Pr
         monthLabel,
         day,
         isoDate,
+        photo: normalizePhoto((r[7] ?? "").trim()),
       };
     });
 

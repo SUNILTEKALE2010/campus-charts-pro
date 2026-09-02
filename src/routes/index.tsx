@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getFaculty, type FacultyRow } from "@/lib/faculty.functions";
+import { FacultyPhoto } from "@/components/FacultyPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
 
 export const Route = createFileRoute("/")({
@@ -481,6 +482,7 @@ function Dashboard() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                           <th className="px-6 py-3 font-semibold">Photo</th>
                            <th className="px-6 py-3 font-semibold">Faculty</th>
                            <th className="px-6 py-3 font-semibold">Date</th>
                            <th className="px-6 py-3 font-semibold">Log in</th>
@@ -494,6 +496,9 @@ function Dashboard() {
                           const fullDay = f.hours >= FULL_DAY;
                           return (
                             <tr key={`${f.sno}-${i}`} className="border-t border-border">
+                              <td className="px-6 py-3">
+                                <FacultyPhoto name={f.name} photo={f.photo} />
+                              </td>
                               <td className="px-6 py-3 font-medium text-foreground">{f.name}</td>
                               <td className="px-6 py-3 tabular-nums text-muted-foreground">
                                 {f.date || "—"}
