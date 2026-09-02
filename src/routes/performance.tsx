@@ -533,7 +533,8 @@ function Performance() {
                             <table className="w-full text-sm">
                               <thead>
                                 <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                                  <th className="px-6 py-3 font-semibold">HT No</th>
+                                  <th className="px-6 py-3 font-semibold">Photo</th>
+                                  <th className="px-4 py-3 font-semibold">HT No</th>
                                   {d.subjectMeta.map((m) => (
                                     <th key={m.subject} className="px-4 py-3 font-semibold">
                                       {m.subject}
@@ -549,9 +550,16 @@ function Performance() {
                               <tbody>
                                 {list.map((s) => (
                                   <tr key={s.htno} className="border-t border-border">
-                                    <td className="px-6 py-3 font-medium text-foreground">
+                                    <td className="px-6 py-3">
+                                      <StudentPhoto
+                                        htno={s.htno}
+                                        photo={photoByHtno.get(s.htno.toUpperCase()) ?? ""}
+                                      />
+                                    </td>
+                                    <td className="px-4 py-3 font-medium text-foreground">
                                       {s.htno}
                                     </td>
+
                                     {s.subjects.map((sub) => (
                                       <td
                                         key={sub.subject}
