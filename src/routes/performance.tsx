@@ -201,6 +201,25 @@ function Performance() {
     retryDelay: (attempt) => 2000 * 2 ** attempt,
   });
 
+  const fetchToday = useServerFn(getTodayAttendance);
+  const { data: today } = useQuery({
+    queryKey: ["today-attendance"],
+    queryFn: () => fetchToday(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
+  });
+
+  const photoByHtno = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of today?.students ?? []) {
+      if (s.photo) map.set(s.htno.toUpperCase(), s.photo);
+    }
+    return map;
+  }, [today]);
+
   const [view, setView] = useState<"dept" | "faculty">("dept");
   const [activeDept, setActiveDept] = useState("All");
   const [activeFaculty, setActiveFaculty] = useState("All");
