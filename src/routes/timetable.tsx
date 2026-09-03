@@ -241,6 +241,8 @@ function TimetablePage() {
                                 {h.period}
                               </td>
                               <td className="px-6 py-3 text-foreground">{h.subject}</td>
+                              <td className="px-6 py-3 text-muted-foreground">{h.year}</td>
+                              <td className="px-6 py-3 text-muted-foreground">{h.dept}</td>
                               <td className="px-6 py-3 text-muted-foreground">{h.section}</td>
                               <td className="px-6 py-3">
                                 <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
