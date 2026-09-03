@@ -130,7 +130,7 @@ function TimetablePage() {
       }
     }
     return out;
-  }, [sections, search, activeSection, activeDay]);
+  }, [sections, search, activeSection, activeYear, activeDay]);
 
   const visible = useMemo(
     () =>
