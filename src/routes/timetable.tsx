@@ -54,6 +54,7 @@ function TimetablePage() {
   const sections = data?.sections ?? [];
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState<string>("All");
+  const [activeYear, setActiveYear] = useState<string>("All");
   const [activeDay, setActiveDay] = useState<string>("All");
 
   const days = useMemo(() => {
