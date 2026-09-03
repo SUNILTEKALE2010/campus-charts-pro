@@ -84,6 +84,8 @@ function TimetablePage() {
         if (slot.period !== effSlotPeriod) continue;
         out.push({
           section: s.section,
+          year: s.year,
+          dept: s.dept,
           room: s.room,
           day: d.day,
           period: slot.period,
