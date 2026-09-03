@@ -374,6 +374,22 @@ function TimetablePage() {
                 </button>
               ))}
               <span className="mx-2 h-6 w-px bg-border" />
+              {["All", ...years].map((y) => (
+                <button
+                  key={y}
+                  type="button"
+                  onClick={() => setActiveYear(y)}
+                  aria-pressed={activeYear === y}
+                  className={
+                    activeYear === y
+                      ? "rounded-full border border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                      : "rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+                  }
+                >
+                  {y === "All" ? "All years" : `Year ${y}`}
+                </button>
+              ))}
+              <span className="mx-2 h-6 w-px bg-border" />
               {["All", ...days].map((d) => (
                 <button
                   key={d}
