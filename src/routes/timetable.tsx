@@ -60,6 +60,39 @@ function TimetablePage() {
     return [...set];
   }, [sections]);
 
+  const allPeriods = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of sections) for (const p of s.periods) set.add(p);
+    return [...set];
+  }, [sections]);
+
+  const [slotDay, setSlotDay] = useState<string>("");
+  const [slotPeriod, setSlotPeriod] = useState<string>("");
+
+  const effSlotDay = slotDay || days[0] || "";
+  const effSlotPeriod = slotPeriod || allPeriods[1] || allPeriods[0] || "";
+
+  const slotRows = useMemo<Hit[]>(() => {
+    if (!effSlotDay || !effSlotPeriod) return [];
+    const out: Hit[] = [];
+    for (const s of sections) {
+      const d = s.days.find((x) => x.day === effSlotDay);
+      if (!d) continue;
+      for (const slot of d.slots) {
+        if (slot.period !== effSlotPeriod) continue;
+        out.push({
+          section: s.section,
+          room: s.room,
+          day: d.day,
+          period: slot.period,
+          subject: slot.subject || slot.raw,
+          faculty: slot.faculty,
+        });
+      }
+    }
+    return out;
+  }, [sections, effSlotDay, effSlotPeriod]);
+
   const hits = useMemo<Hit[]>(() => {
     const q = search.trim().toLowerCase();
     if (!q) return [];
@@ -212,6 +245,89 @@ function TimetablePage() {
                       </table>
                     </div>
                   )}
+                </div>
+              )}
+            </section>
+
+            <section
+              className="mt-8 overflow-hidden rounded-2xl border border-border bg-card"
+              style={{ boxShadow: "var(--shadow-card)" }}
+              aria-label="Period wise faculty"
+            >
+              <div className="border-b border-border bg-secondary/60 px-6 py-4">
+                <h2 className="text-base font-semibold text-secondary-foreground">
+                  Who is teaching in a period (all rooms)
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Pick a day and a period to see every section, room, subject and faculty for that
+                  slot.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 px-6 py-4">
+                {days.map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setSlotDay(d)}
+                    aria-pressed={effSlotDay === d}
+                    className={
+                      effSlotDay === d
+                        ? "rounded-lg border border-primary bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground"
+                        : "rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+                    }
+                  >
+                    {d}
+                  </button>
+                ))}
+                <span className="mx-2 h-6 w-px bg-border" />
+                {allPeriods.map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setSlotPeriod(p)}
+                    aria-pressed={effSlotPeriod === p}
+                    className={
+                      effSlotPeriod === p
+                        ? "rounded-full border border-primary bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground"
+                        : "rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+                    }
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+
+              {slotRows.length === 0 ? (
+                <p className="px-6 pb-5 text-sm text-muted-foreground">
+                  No classes found for {effSlotDay || "that day"} · {effSlotPeriod || "that period"}.
+                </p>
+              ) : (
+                <div className="overflow-x-auto border-t border-border">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                        <th className="px-6 py-3 font-semibold">Section</th>
+                        <th className="px-6 py-3 font-semibold">Room</th>
+                        <th className="px-6 py-3 font-semibold">Subject</th>
+                        <th className="px-6 py-3 font-semibold">Faculty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {slotRows.map((r, i) => (
+                        <tr key={i} className="border-t border-border">
+                          <td className="px-6 py-3 font-medium text-foreground">{r.section}</td>
+                          <td className="px-6 py-3">
+                            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                              {r.room}
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 text-foreground">{r.subject || "—"}</td>
+                          <td className="px-6 py-3 text-muted-foreground">{r.faculty || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </section>
