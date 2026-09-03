@@ -249,6 +249,89 @@ function TimetablePage() {
               )}
             </section>
 
+            <section
+              className="mt-8 overflow-hidden rounded-2xl border border-border bg-card"
+              style={{ boxShadow: "var(--shadow-card)" }}
+              aria-label="Period wise faculty"
+            >
+              <div className="border-b border-border bg-secondary/60 px-6 py-4">
+                <h2 className="text-base font-semibold text-secondary-foreground">
+                  Who is teaching in a period (all rooms)
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Pick a day and a period to see every section, room, subject and faculty for that
+                  slot.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 px-6 py-4">
+                {days.map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setSlotDay(d)}
+                    aria-pressed={effSlotDay === d}
+                    className={
+                      effSlotDay === d
+                        ? "rounded-lg border border-primary bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground"
+                        : "rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+                    }
+                  >
+                    {d}
+                  </button>
+                ))}
+                <span className="mx-2 h-6 w-px bg-border" />
+                {allPeriods.map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setSlotPeriod(p)}
+                    aria-pressed={effSlotPeriod === p}
+                    className={
+                      effSlotPeriod === p
+                        ? "rounded-full border border-primary bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground"
+                        : "rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+                    }
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+
+              {slotRows.length === 0 ? (
+                <p className="px-6 pb-5 text-sm text-muted-foreground">
+                  No classes found for {effSlotDay || "that day"} · {effSlotPeriod || "that period"}.
+                </p>
+              ) : (
+                <div className="overflow-x-auto border-t border-border">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                        <th className="px-6 py-3 font-semibold">Section</th>
+                        <th className="px-6 py-3 font-semibold">Room</th>
+                        <th className="px-6 py-3 font-semibold">Subject</th>
+                        <th className="px-6 py-3 font-semibold">Faculty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {slotRows.map((r, i) => (
+                        <tr key={i} className="border-t border-border">
+                          <td className="px-6 py-3 font-medium text-foreground">{r.section}</td>
+                          <td className="px-6 py-3">
+                            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                              {r.room}
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 text-foreground">{r.subject || "—"}</td>
+                          <td className="px-6 py-3 text-muted-foreground">{r.faculty || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
             <section className="mt-8 flex flex-wrap items-center gap-2" aria-label="Filters">
               {["All", ...sections.map((s) => s.section)].map((s) => (
                 <button
