@@ -17,6 +17,8 @@ export type DayRow = {
 
 export type SectionTimetable = {
   section: string;
+  year: string;
+  dept: string;
   room: string;
   periods: string[];
   days: DayRow[];
@@ -35,6 +37,21 @@ function splitCell(raw: string): { subject: string; faculty: string } {
   return { subject: text, faculty: "" };
 }
 
+/** Extracts year (roman numeral) and department from a section header like "Section I CSE". */
+function parseSectionHeader(header: string): { year: string; dept: string } {
+  const text = (header ?? "").trim();
+  const m = text.match(/^section\s+([IVXivx]+)\s+(.*)$/i);
+  if (m) return { year: (m[1] ?? "").trim().toUpperCase(), dept: (m[2] ?? "").trim().toUpperCase() };
+  // Fallback: try to find any roman numeral token and treat the rest as dept
+  const fallback = text.match(/\b([IVXivx]+)\b/);
+  if (fallback) {
+    const year = fallback[1]!.toUpperCase();
+    const dept = text.replace(fallback[0], "").replace(/^section\s*/i, "").trim().toUpperCase() || "—";
+    return { year, dept };
+  }
+  return { year: "—", dept: text.toUpperCase() || "—" };
+}
+
 function parseSheet(values: string[][]): SectionTimetable[] {
   const sections: SectionTimetable[] = [];
   let current: SectionTimetable | null = null;
@@ -49,7 +66,15 @@ function parseSheet(values: string[][]): SectionTimetable[] {
     const next = cells[idx + 1] ?? "";
 
     if (/^section\b/i.test(label)) {
-      current = { section: label, room: next || "—", periods: [], days: [] };
+      const { year, dept } = parseSectionHeader(label);
+      current = {
+        section: label,
+        year,
+        dept,
+        room: next || "—",
+        periods: [],
+        days: [],
+      };
       sections.push(current);
       continue;
     }

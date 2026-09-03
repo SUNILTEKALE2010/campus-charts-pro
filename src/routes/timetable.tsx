@@ -29,6 +29,8 @@ export const Route = createFileRoute("/timetable")({
 
 type Hit = {
   section: string;
+  year: string;
+  dept: string;
   room: string;
   day: string;
   period: string;
@@ -52,6 +54,7 @@ function TimetablePage() {
   const sections = data?.sections ?? [];
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState<string>("All");
+  const [activeYear, setActiveYear] = useState<string>("All");
   const [activeDay, setActiveDay] = useState<string>("All");
 
   const days = useMemo(() => {
@@ -63,6 +66,12 @@ function TimetablePage() {
   const allPeriods = useMemo(() => {
     const set = new Set<string>();
     for (const s of sections) for (const p of s.periods) set.add(p);
+    return [...set];
+  }, [sections]);
+
+  const years = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of sections) if (s.year) set.add(s.year);
     return [...set];
   }, [sections]);
 
@@ -82,6 +91,8 @@ function TimetablePage() {
         if (slot.period !== effSlotPeriod) continue;
         out.push({
           section: s.section,
+          year: s.year,
+          dept: s.dept,
           room: s.room,
           day: d.day,
           period: slot.period,
@@ -99,12 +110,15 @@ function TimetablePage() {
     const out: Hit[] = [];
     for (const s of sections) {
       if (activeSection !== "All" && s.section !== activeSection) continue;
+      if (activeYear !== "All" && s.year !== activeYear) continue;
       for (const d of s.days) {
         if (activeDay !== "All" && d.day !== activeDay) continue;
         for (const slot of d.slots) {
           if (slot.faculty && slot.faculty.toLowerCase().includes(q)) {
             out.push({
               section: s.section,
+              year: s.year,
+              dept: s.dept,
               room: s.room,
               day: d.day,
               period: slot.period,
@@ -116,17 +130,18 @@ function TimetablePage() {
       }
     }
     return out;
-  }, [sections, search, activeSection, activeDay]);
+  }, [sections, search, activeSection, activeYear, activeDay]);
 
   const visible = useMemo(
     () =>
       sections
         .filter((s) => activeSection === "All" || s.section === activeSection)
+        .filter((s) => activeYear === "All" || s.year === activeYear)
         .map((s) => ({
           ...s,
           days: s.days.filter((d) => activeDay === "All" || d.day === activeDay),
         })),
-    [sections, activeSection, activeDay],
+    [sections, activeSection, activeYear, activeDay],
   );
 
   const facultyCount = useMemo(() => {
@@ -197,9 +212,10 @@ function TimetablePage() {
                     <h2 className="text-base font-semibold text-secondary-foreground">
                       Where is “{search.trim()}”?
                     </h2>
-                    {(activeSection !== "All" || activeDay !== "All") && (
+                    {(activeSection !== "All" || activeYear !== "All" || activeDay !== "All") && (
                       <p className="mt-1 text-xs text-muted-foreground">
                         Filtered to {activeSection === "All" ? "all sections" : activeSection} ·{" "}
+                        {activeYear === "All" ? "all years" : `Year ${activeYear}`} ·{" "}
                         {activeDay === "All" ? "all days" : activeDay}
                       </p>
                     )}
@@ -208,8 +224,9 @@ function TimetablePage() {
                     <p className="px-6 py-5 text-sm text-muted-foreground">
                       No class found for that faculty name
                       {activeSection !== "All" ? ` in ${activeSection}` : ""}
-                      {activeDay !== "All" ? ` on ${activeDay}` : ""}. Try another section or day
-                      filter below.
+                      {activeYear !== "All" ? ` in Year ${activeYear}` : ""}
+                      {activeDay !== "All" ? ` on ${activeDay}` : ""}. Try another section, year or
+                      day filter below.
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
@@ -220,6 +237,8 @@ function TimetablePage() {
                             <th className="px-6 py-3 font-semibold">Day</th>
                             <th className="px-6 py-3 font-semibold">Period</th>
                             <th className="px-6 py-3 font-semibold">Subject</th>
+                            <th className="px-6 py-3 font-semibold">Year</th>
+                            <th className="px-6 py-3 font-semibold">Dept</th>
                             <th className="px-6 py-3 font-semibold">Section</th>
                             <th className="px-6 py-3 font-semibold">Room</th>
                           </tr>
@@ -233,6 +252,8 @@ function TimetablePage() {
                                 {h.period}
                               </td>
                               <td className="px-6 py-3 text-foreground">{h.subject}</td>
+                              <td className="px-6 py-3 text-muted-foreground">{h.year}</td>
+                              <td className="px-6 py-3 text-muted-foreground">{h.dept}</td>
                               <td className="px-6 py-3 text-muted-foreground">{h.section}</td>
                               <td className="px-6 py-3">
                                 <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -308,6 +329,8 @@ function TimetablePage() {
                     <thead>
                       <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
                         <th className="px-6 py-3 font-semibold">Section</th>
+                        <th className="px-6 py-3 font-semibold">Year</th>
+                        <th className="px-6 py-3 font-semibold">Dept</th>
                         <th className="px-6 py-3 font-semibold">Room</th>
                         <th className="px-6 py-3 font-semibold">Subject</th>
                         <th className="px-6 py-3 font-semibold">Faculty</th>
@@ -317,6 +340,8 @@ function TimetablePage() {
                       {slotRows.map((r, i) => (
                         <tr key={i} className="border-t border-border">
                           <td className="px-6 py-3 font-medium text-foreground">{r.section}</td>
+                          <td className="px-6 py-3 text-muted-foreground">{r.year}</td>
+                          <td className="px-6 py-3 text-muted-foreground">{r.dept}</td>
                           <td className="px-6 py-3">
                             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                               {r.room}
@@ -349,6 +374,22 @@ function TimetablePage() {
                 </button>
               ))}
               <span className="mx-2 h-6 w-px bg-border" />
+              {["All", ...years].map((y) => (
+                <button
+                  key={y}
+                  type="button"
+                  onClick={() => setActiveYear(y)}
+                  aria-pressed={activeYear === y}
+                  className={
+                    activeYear === y
+                      ? "rounded-full border border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                      : "rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/60 hover:bg-secondary"
+                  }
+                >
+                  {y === "All" ? "All years" : `Year ${y}`}
+                </button>
+              ))}
+              <span className="mx-2 h-6 w-px bg-border" />
               {["All", ...days].map((d) => (
                 <button
                   key={d}
@@ -374,9 +415,17 @@ function TimetablePage() {
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-secondary/60 px-6 py-4">
-                    <h2 className="text-base font-semibold text-secondary-foreground">
-                      {s.section}
-                    </h2>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-base font-semibold text-secondary-foreground">
+                        {s.section}
+                      </h2>
+                      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                        Year {s.year}
+                      </span>
+                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
+                        {s.dept}
+                      </span>
+                    </div>
                     <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                       {s.room}
                     </span>
