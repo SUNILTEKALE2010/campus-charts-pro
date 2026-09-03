@@ -109,6 +109,8 @@ function TimetablePage() {
           if (slot.faculty && slot.faculty.toLowerCase().includes(q)) {
             out.push({
               section: s.section,
+              year: s.year,
+              dept: s.dept,
               room: s.room,
               day: d.day,
               period: slot.period,
