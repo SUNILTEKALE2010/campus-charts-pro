@@ -136,11 +136,12 @@ function TimetablePage() {
     () =>
       sections
         .filter((s) => activeSection === "All" || s.section === activeSection)
+        .filter((s) => activeYear === "All" || s.year === activeYear)
         .map((s) => ({
           ...s,
           days: s.days.filter((d) => activeDay === "All" || d.day === activeDay),
         })),
-    [sections, activeSection, activeDay],
+    [sections, activeSection, activeYear, activeDay],
   );
 
   const facultyCount = useMemo(() => {
