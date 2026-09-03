@@ -380,9 +380,17 @@ function TimetablePage() {
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-secondary/60 px-6 py-4">
-                    <h2 className="text-base font-semibold text-secondary-foreground">
-                      {s.section}
-                    </h2>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-base font-semibold text-secondary-foreground">
+                        {s.section}
+                      </h2>
+                      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                        Year {s.year}
+                      </span>
+                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
+                        {s.dept}
+                      </span>
+                    </div>
                     <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                       {s.room}
                     </span>
