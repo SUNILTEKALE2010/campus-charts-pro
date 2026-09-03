@@ -66,7 +66,15 @@ function parseSheet(values: string[][]): SectionTimetable[] {
     const next = cells[idx + 1] ?? "";
 
     if (/^section\b/i.test(label)) {
-      current = { section: label, room: next || "—", periods: [], days: [] };
+      const { year, dept } = parseSectionHeader(label);
+      current = {
+        section: label,
+        year,
+        dept,
+        room: next || "—",
+        periods: [],
+        days: [],
+      };
       sections.push(current);
       continue;
     }
