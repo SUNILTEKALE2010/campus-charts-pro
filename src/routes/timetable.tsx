@@ -60,6 +60,39 @@ function TimetablePage() {
     return [...set];
   }, [sections]);
 
+  const allPeriods = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of sections) for (const p of s.periods) set.add(p);
+    return [...set];
+  }, [sections]);
+
+  const [slotDay, setSlotDay] = useState<string>("");
+  const [slotPeriod, setSlotPeriod] = useState<string>("");
+
+  const effSlotDay = slotDay || days[0] || "";
+  const effSlotPeriod = slotPeriod || allPeriods[1] || allPeriods[0] || "";
+
+  const slotRows = useMemo<Hit[]>(() => {
+    if (!effSlotDay || !effSlotPeriod) return [];
+    const out: Hit[] = [];
+    for (const s of sections) {
+      const d = s.days.find((x) => x.day === effSlotDay);
+      if (!d) continue;
+      for (const slot of d.slots) {
+        if (slot.period !== effSlotPeriod) continue;
+        out.push({
+          section: s.section,
+          room: s.room,
+          day: d.day,
+          period: slot.period,
+          subject: slot.subject || slot.raw,
+          faculty: slot.faculty,
+        });
+      }
+    }
+    return out;
+  }, [sections, effSlotDay, effSlotPeriod]);
+
   const hits = useMemo<Hit[]>(() => {
     const q = search.trim().toLowerCase();
     if (!q) return [];
