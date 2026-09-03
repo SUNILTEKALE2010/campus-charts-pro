@@ -29,6 +29,8 @@ export const Route = createFileRoute("/timetable")({
 
 type Hit = {
   section: string;
+  year: string;
+  dept: string;
   room: string;
   day: string;
   period: string;
