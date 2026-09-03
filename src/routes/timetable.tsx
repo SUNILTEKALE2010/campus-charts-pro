@@ -212,9 +212,10 @@ function TimetablePage() {
                     <h2 className="text-base font-semibold text-secondary-foreground">
                       Where is “{search.trim()}”?
                     </h2>
-                    {(activeSection !== "All" || activeDay !== "All") && (
+                    {(activeSection !== "All" || activeYear !== "All" || activeDay !== "All") && (
                       <p className="mt-1 text-xs text-muted-foreground">
                         Filtered to {activeSection === "All" ? "all sections" : activeSection} ·{" "}
+                        {activeYear === "All" ? "all years" : `Year ${activeYear}`} ·{" "}
                         {activeDay === "All" ? "all days" : activeDay}
                       </p>
                     )}
