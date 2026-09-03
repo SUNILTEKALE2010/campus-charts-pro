@@ -329,6 +329,8 @@ function TimetablePage() {
                       {slotRows.map((r, i) => (
                         <tr key={i} className="border-t border-border">
                           <td className="px-6 py-3 font-medium text-foreground">{r.section}</td>
+                          <td className="px-6 py-3 text-muted-foreground">{r.year}</td>
+                          <td className="px-6 py-3 text-muted-foreground">{r.dept}</td>
                           <td className="px-6 py-3">
                             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                               {r.room}
