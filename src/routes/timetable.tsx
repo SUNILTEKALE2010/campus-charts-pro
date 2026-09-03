@@ -224,8 +224,9 @@ function TimetablePage() {
                     <p className="px-6 py-5 text-sm text-muted-foreground">
                       No class found for that faculty name
                       {activeSection !== "All" ? ` in ${activeSection}` : ""}
-                      {activeDay !== "All" ? ` on ${activeDay}` : ""}. Try another section or day
-                      filter below.
+                      {activeYear !== "All" ? ` in Year ${activeYear}` : ""}
+                      {activeDay !== "All" ? ` on ${activeDay}` : ""}. Try another section, year or
+                      day filter below.
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
