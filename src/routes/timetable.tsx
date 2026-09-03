@@ -69,6 +69,12 @@ function TimetablePage() {
     return [...set];
   }, [sections]);
 
+  const years = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of sections) if (s.year) set.add(s.year);
+    return [...set];
+  }, [sections]);
+
   const [slotDay, setSlotDay] = useState<string>("");
   const [slotPeriod, setSlotPeriod] = useState<string>("");
 
