@@ -226,6 +226,8 @@ function TimetablePage() {
                             <th className="px-6 py-3 font-semibold">Day</th>
                             <th className="px-6 py-3 font-semibold">Period</th>
                             <th className="px-6 py-3 font-semibold">Subject</th>
+                            <th className="px-6 py-3 font-semibold">Year</th>
+                            <th className="px-6 py-3 font-semibold">Dept</th>
                             <th className="px-6 py-3 font-semibold">Section</th>
                             <th className="px-6 py-3 font-semibold">Room</th>
                           </tr>
