@@ -17,6 +17,8 @@ export type DayRow = {
 
 export type SectionTimetable = {
   section: string;
+  year: string;
+  dept: string;
   room: string;
   periods: string[];
   days: DayRow[];
