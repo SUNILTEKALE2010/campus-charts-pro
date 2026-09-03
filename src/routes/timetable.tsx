@@ -110,6 +110,7 @@ function TimetablePage() {
     const out: Hit[] = [];
     for (const s of sections) {
       if (activeSection !== "All" && s.section !== activeSection) continue;
+      if (activeYear !== "All" && s.year !== activeYear) continue;
       for (const d of s.days) {
         if (activeDay !== "All" && d.day !== activeDay) continue;
         for (const slot of d.slots) {
