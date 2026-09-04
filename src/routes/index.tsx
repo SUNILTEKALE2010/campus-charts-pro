@@ -500,9 +500,10 @@ function Dashboard() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                           <th className="px-6 py-3 font-semibold">Photo</th>
-                           <th className="px-6 py-3 font-semibold">Faculty</th>
-                           <th className="px-6 py-3 font-semibold">Date</th>
+                            <th className="px-6 py-3 font-semibold">Photo</th>
+                            <th className="px-6 py-3 font-semibold">Faculty</th>
+                            <th className="px-6 py-3 font-semibold">Year of study</th>
+                            <th className="px-6 py-3 font-semibold">Date</th>
                            <th className="px-6 py-3 font-semibold">Log in</th>
                           <th className="px-6 py-3 font-semibold">Log out</th>
                           <th className="px-6 py-3 font-semibold">Hours</th>
