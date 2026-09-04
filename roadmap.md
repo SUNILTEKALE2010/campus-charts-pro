@@ -6,3 +6,8 @@
   - Attendance tab: faculty search rows show the year(s) that faculty teaches
   - Student tabs (marks / stud-attendance / today): Sheet2 has no HTNO, so year comes from
     the section/year mapping only where a section is available
+
+- [x] Sheet2 year parsing fixed (reads the `Year-2` column)
+- [x] Attendance tab: "Year of study" column per faculty
+- [x] Marks tab: year shown in faculty summary, faculty sections and subject headers
+- Note: Sheet3/4/5 have only BRANCH + HTNO, no section link, so student rows cannot be tied to a year
