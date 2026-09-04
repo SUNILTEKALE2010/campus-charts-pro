@@ -1,8 +1,18 @@
 import type { SectionTimetable } from "@/lib/timetable.functions";
 
 const ORDER = ["I", "II", "III", "IV"];
+const TITLES = /^(dr|prof|mr|mrs|ms|smt|sri|shri)\.?$/i;
 
-/** Maps a lowercased faculty name to the years of study they teach, from Sheet2. */
+/** Lowercased name tokens with academic titles removed. */
+function tokens(name: string): string[] {
+  return (name ?? "")
+    .toLowerCase()
+    .replace(/[^a-z\s.]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t && !TITLES.test(t) && t.length > 2);
+}
+
+/** Maps a faculty name to the years of study they teach, from Sheet2. */
 export function buildFacultyYears(sections: SectionTimetable[]): Map<string, string[]> {
   const map = new Map<string, Set<string>>();
   for (const s of sections) {
@@ -27,8 +37,24 @@ export function buildFacultyYears(sections: SectionTimetable[]): Map<string, str
   return out;
 }
 
-/** Renders the year list for a faculty name, or an em dash when unknown. */
+/**
+ * Years for a faculty name. Sheet1/Sheet3 use full names ("Dr. Anil Kumar") while
+ * Sheet2 uses short names ("Anil"), so matching falls back to shared name tokens.
+ */
 export function yearsForFaculty(map: Map<string, string[]>, name: string): string {
-  const years = map.get((name ?? "").trim().toLowerCase());
-  return years && years.length ? years.map((y) => `Year ${y}`).join(", ") : "—";
+  const key = (name ?? "").trim().toLowerCase();
+  if (!key) return "—";
+
+  let years = map.get(key);
+  if (!years) {
+    const want = new Set(tokens(key));
+    const found = new Set<string>();
+    for (const [candidate, list] of map) {
+      const hit = tokens(candidate).some((t) => want.has(t));
+      if (hit) for (const y of list) found.add(y);
+    }
+    years = [...found].sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
+  }
+
+  return years.length ? years.map((y) => `Year ${y}`).join(", ") : "—";
 }
