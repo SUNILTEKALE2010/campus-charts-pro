@@ -519,6 +519,9 @@ function Dashboard() {
                                 <FacultyPhoto name={f.name} photo={f.photo} />
                               </td>
                               <td className="px-6 py-3 font-medium text-foreground">{f.name}</td>
+                              <td className="px-6 py-3 text-muted-foreground">
+                                {yearsForFaculty(facultyYears, f.name)}
+                              </td>
                               <td className="px-6 py-3 tabular-nums text-muted-foreground">
                                 {f.date || "—"}
                               </td>
