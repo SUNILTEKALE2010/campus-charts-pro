@@ -37,19 +37,32 @@ function splitCell(raw: string): { subject: string; faculty: string } {
   return { subject: text, faculty: "" };
 }
 
-/** Extracts year (roman numeral) and department from a section header like "Section I CSE". */
-function parseSectionHeader(header: string): { year: string; dept: string } {
-  const text = (header ?? "").trim();
-  const m = text.match(/^section\s+([IVXivx]+)\s+(.*)$/i);
-  if (m) return { year: (m[1] ?? "").trim().toUpperCase(), dept: (m[2] ?? "").trim().toUpperCase() };
-  // Fallback: try to find any roman numeral token and treat the rest as dept
-  const fallback = text.match(/\b([IVXivx]+)\b/);
-  if (fallback) {
-    const year = fallback[1]!.toUpperCase();
-    const dept = text.replace(fallback[0], "").replace(/^section\s*/i, "").trim().toUpperCase() || "—";
-    return { year, dept };
+const ROMAN_BY_NUMBER: Record<string, string> = { "1": "I", "2": "II", "3": "III", "4": "IV" };
+
+/** Normalises "Year-2", "2nd year", "II" → "II". */
+function normaliseYear(raw: string): string {
+  const text = (raw ?? "").trim();
+  if (!text) return "";
+  const num = text.match(/(\d+)/);
+  if (num) return ROMAN_BY_NUMBER[num[1]!] ?? num[1]!;
+  const roman = text.match(/\b(IV|III|II|I)\b/i);
+  if (roman) return roman[1]!.toUpperCase();
+  return "";
+}
+
+/**
+ * Reads the year of study and department from a Sheet2 section row.
+ * Sheet2 keeps them in their own cells, e.g. ["", "SECTION A", "ROOM-10", "Section-A", "Year-2"].
+ */
+function parseSectionMeta(cells: string[]): { year: string; dept: string } {
+  let year = "";
+  let dept = "";
+  for (const cell of cells) {
+    if (!cell) continue;
+    if (!year && /year/i.test(cell)) year = normaliseYear(cell);
+    if (!dept && /^(cse|ece|eee|mech|civil|it|csm|aiml|ds)\b/i.test(cell)) dept = cell.toUpperCase();
   }
-  return { year: "—", dept: text.toUpperCase() || "—" };
+  return { year: year || "—", dept: dept || "—" };
 }
 
 function parseSheet(values: string[][]): SectionTimetable[] {
