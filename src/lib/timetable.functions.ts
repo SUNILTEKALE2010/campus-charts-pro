@@ -79,7 +79,7 @@ function parseSheet(values: string[][]): SectionTimetable[] {
     const next = cells[idx + 1] ?? "";
 
     if (/^section\b/i.test(label)) {
-      const { year, dept } = parseSectionHeader(label);
+      const { year, dept } = parseSectionMeta(cells);
       current = {
         section: label,
         year,
