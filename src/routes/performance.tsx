@@ -511,7 +511,8 @@ function Performance() {
                               key={m.subject}
                               className="rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs font-medium text-secondary-foreground"
                             >
-                              {m.subject} · {m.faculty || "—"} (max {m.max})
+                              {m.subject} · {m.faculty || "—"} ·{" "}
+                              {yearsForFaculty(facultyYears, m.faculty)} (max {m.max})
                             </span>
                           ))}
                         </div>
