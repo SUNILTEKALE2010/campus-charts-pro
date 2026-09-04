@@ -555,7 +555,7 @@ function Performance() {
                                     <th key={m.subject} className="px-4 py-3 font-semibold">
                                       {m.subject}
                                       <span className="block text-[10px] font-normal normal-case">
-                                        {m.faculty || "—"}
+                                        {m.faculty || "—"} · {yearsForFaculty(facultyYears, m.faculty)}
                                       </span>
                                     </th>
                                   ))}
