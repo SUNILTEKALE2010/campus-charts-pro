@@ -627,7 +627,7 @@ function Performance() {
                       rows={shownFaculty.map((f) => ({
                         key: f.faculty,
                         name: f.faculty,
-                        sub: `${f.depts.join(", ")} · ${f.subjects.map((s) => s.subject).join(", ")}`,
+                        sub: `${yearsForFaculty(facultyYears, f.faculty)} · ${f.depts.join(", ")} · ${f.subjects.map((s) => s.subject).join(", ")}`,
                         average: f.average,
                         highest: f.highest,
                         lowest: f.lowest,
