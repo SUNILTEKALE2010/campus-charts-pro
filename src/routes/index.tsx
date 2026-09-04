@@ -3,6 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getFaculty, type FacultyRow } from "@/lib/faculty.functions";
+import { getTimetable } from "@/lib/timetable.functions";
+import { buildFacultyYears, yearsForFaculty } from "@/lib/timetable-years";
 import { FacultyPhoto } from "@/components/FacultyPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
 
