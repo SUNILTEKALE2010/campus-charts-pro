@@ -643,6 +643,9 @@ function Performance() {
                   <section key={f.faculty} className="mt-10">
                     <h2 className="text-lg font-semibold text-foreground">
                       {f.faculty} — subject wise
+                      <span className="ml-3 rounded-full bg-primary/10 px-3 py-1 align-middle text-xs font-semibold text-primary">
+                        {yearsForFaculty(facultyYears, f.faculty)}
+                      </span>
                     </h2>
                     <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                       <StatCard
