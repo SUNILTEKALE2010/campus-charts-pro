@@ -222,6 +222,19 @@ function Performance() {
     return map;
   }, [today]);
 
+  // Sheet2 supplies the year of study for each faculty.
+  const fetchTimetable = useServerFn(getTimetable);
+  const { data: timetable } = useQuery({
+    queryKey: ["timetable"],
+    queryFn: () => fetchTimetable(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
+  });
+  const facultyYears = useMemo(() => buildFacultyYears(timetable?.sections ?? []), [timetable]);
+
   const [view, setView] = useState<"dept" | "faculty">("dept");
   const [activeDept, setActiveDept] = useState("All");
   const [activeFaculty, setActiveFaculty] = useState("All");
