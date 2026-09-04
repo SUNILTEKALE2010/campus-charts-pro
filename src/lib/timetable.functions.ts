@@ -71,10 +71,12 @@ function parseSheet(values: string[][]): SectionTimetable[] {
 
   for (const row of values) {
     const cells = (row ?? []).map((c) => (c ?? "").trim());
-    const first = cells.find((c) => c !== "") ?? "";
-    if (!first) continue;
+    if (!cells.some((c) => c !== "")) continue;
 
-    const idx = cells.findIndex((c) => c !== "");
+    // Some rows carry a stray year marker (e.g. "Year-2") in the leading column;
+    // it is metadata, never the row label.
+    const idx = cells.findIndex((c) => c !== "" && !/^year\b/i.test(c) && !/^year-/i.test(c));
+    if (idx === -1) continue;
     const label = cells[idx] ?? "";
     const next = cells[idx + 1] ?? "";
 
