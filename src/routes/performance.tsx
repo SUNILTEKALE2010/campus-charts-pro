@@ -17,6 +17,8 @@ import {
 } from "recharts";
 import { getPerformance } from "@/lib/performance.functions";
 import { getTodayAttendance } from "@/lib/today.functions";
+import { getTimetable } from "@/lib/timetable.functions";
+import { buildFacultyYears, yearsForFaculty } from "@/lib/timetable-years";
 import { StudentPhoto } from "@/components/StudentPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
 
