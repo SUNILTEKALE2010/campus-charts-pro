@@ -17,6 +17,8 @@ import {
 } from "recharts";
 import { getPerformance } from "@/lib/performance.functions";
 import { getTodayAttendance } from "@/lib/today.functions";
+import { getTimetable } from "@/lib/timetable.functions";
+import { buildFacultyYears, yearsForFaculty } from "@/lib/timetable-years";
 import { StudentPhoto } from "@/components/StudentPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
 
@@ -219,6 +221,19 @@ function Performance() {
     }
     return map;
   }, [today]);
+
+  // Sheet2 supplies the year of study for each faculty.
+  const fetchTimetable = useServerFn(getTimetable);
+  const { data: timetable } = useQuery({
+    queryKey: ["timetable"],
+    queryFn: () => fetchTimetable(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
+  });
+  const facultyYears = useMemo(() => buildFacultyYears(timetable?.sections ?? []), [timetable]);
 
   const [view, setView] = useState<"dept" | "faculty">("dept");
   const [activeDept, setActiveDept] = useState("All");
@@ -496,7 +511,8 @@ function Performance() {
                               key={m.subject}
                               className="rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs font-medium text-secondary-foreground"
                             >
-                              {m.subject} · {m.faculty || "—"} (max {m.max})
+                              {m.subject} · {m.faculty || "—"} ·{" "}
+                              {yearsForFaculty(facultyYears, m.faculty)} (max {m.max})
                             </span>
                           ))}
                         </div>
@@ -539,7 +555,7 @@ function Performance() {
                                     <th key={m.subject} className="px-4 py-3 font-semibold">
                                       {m.subject}
                                       <span className="block text-[10px] font-normal normal-case">
-                                        {m.faculty || "—"}
+                                        {m.faculty || "—"} · {yearsForFaculty(facultyYears, m.faculty)}
                                       </span>
                                     </th>
                                   ))}
@@ -627,7 +643,7 @@ function Performance() {
                       rows={shownFaculty.map((f) => ({
                         key: f.faculty,
                         name: f.faculty,
-                        sub: `${f.depts.join(", ")} · ${f.subjects.map((s) => s.subject).join(", ")}`,
+                        sub: `${yearsForFaculty(facultyYears, f.faculty)} · ${f.depts.join(", ")} · ${f.subjects.map((s) => s.subject).join(", ")}`,
                         average: f.average,
                         highest: f.highest,
                         lowest: f.lowest,
@@ -643,6 +659,9 @@ function Performance() {
                   <section key={f.faculty} className="mt-10">
                     <h2 className="text-lg font-semibold text-foreground">
                       {f.faculty} — subject wise
+                      <span className="ml-3 rounded-full bg-primary/10 px-3 py-1 align-middle text-xs font-semibold text-primary">
+                        {yearsForFaculty(facultyYears, f.faculty)}
+                      </span>
                     </h2>
                     <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                       <StatCard
