@@ -466,6 +466,7 @@ function TodayAttendance() {
           </section>
         </>
       ) : null}
+      </div>
     </main>
   );
 }
