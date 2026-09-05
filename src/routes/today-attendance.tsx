@@ -216,18 +216,16 @@ function TodayAttendance() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-5 py-10">
-      <header className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          {today}
-        </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground sm:text-4xl">Today's Attendance</h1>
-        <p className="mt-2 text-muted-foreground">
-          Department-wise present and absent counts, with full student details by hall ticket
-          number.
-        </p>
-      </header>
+    <main className="min-h-screen bg-background">
+      <PageHero
+        image={heroToday}
+        priority
+        eyebrow={today}
+        title="Today's Attendance"
+        description="Department-wise present and absent counts, with full student details by hall ticket number."
+      />
 
+      <div className="mx-auto w-full max-w-6xl px-5 py-10">
       <div className="mb-8">
         <DashboardTabs />
       </div>
