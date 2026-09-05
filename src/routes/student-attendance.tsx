@@ -6,6 +6,8 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recha
 import { getStudentAttendance } from "@/lib/attendance.functions";
 import { getTodayAttendance } from "@/lib/today.functions";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { PageHero } from "@/components/PageHero";
+import heroStudentAttendance from "@/assets/hero-student-attendance.jpg";
 import { StudentPhoto } from "@/components/StudentPhoto";
 
 export const Route = createFileRoute("/student-attendance")({

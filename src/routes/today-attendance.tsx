@@ -17,6 +17,8 @@ import {
 } from "recharts";
 import { getTodayAttendance } from "@/lib/today.functions";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { PageHero } from "@/components/PageHero";
+import heroToday from "@/assets/hero-today.jpg";
 import { StudentPhoto } from "@/components/StudentPhoto";
 import type { TodayRow } from "@/lib/today.types";
 

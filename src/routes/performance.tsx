@@ -21,6 +21,8 @@ import { getTimetable } from "@/lib/timetable.functions";
 import { buildFacultyYears, yearsForFaculty } from "@/lib/timetable-years";
 import { StudentPhoto } from "@/components/StudentPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { PageHero } from "@/components/PageHero";
+import heroMarks from "@/assets/hero-marks.jpg";
 
 export const Route = createFileRoute("/performance")({
   component: Performance,

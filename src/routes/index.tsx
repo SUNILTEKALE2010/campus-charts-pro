@@ -7,6 +7,8 @@ import { getTimetable } from "@/lib/timetable.functions";
 import { buildFacultyYears, yearsForFaculty } from "@/lib/timetable-years";
 import { FacultyPhoto } from "@/components/FacultyPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { PageHero } from "@/components/PageHero";
+import heroFaculty from "@/assets/hero-faculty.jpg";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,

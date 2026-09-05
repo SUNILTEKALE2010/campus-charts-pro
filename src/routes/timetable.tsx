@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getTimetable } from "@/lib/timetable.functions";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { PageHero } from "@/components/PageHero";
+import heroTimetable from "@/assets/hero-timetable.jpg";
 
 export const Route = createFileRoute("/timetable")({
   component: TimetablePage,
