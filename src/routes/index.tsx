@@ -7,6 +7,8 @@ import { getTimetable } from "@/lib/timetable.functions";
 import { buildFacultyYears, yearsForFaculty } from "@/lib/timetable-years";
 import { FacultyPhoto } from "@/components/FacultyPhoto";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { PageHero } from "@/components/PageHero";
+import heroFaculty from "@/assets/hero-faculty.jpg";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -250,23 +252,13 @@ function Dashboard() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header
-        className="px-6 py-14 text-primary-foreground sm:px-10"
-        style={{ background: "var(--gradient-hero)" }}
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-80">
-            Attendance intelligence
-          </p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Faculty Management Dashboard
-          </h1>
-          <p className="mt-3 max-w-2xl text-base opacity-85">
-            Department-wise faculty roster with total strength and an 8-hour duty completion
-            breakdown, synced live from your attendance sheet.
-          </p>
-        </div>
-      </header>
+      <PageHero
+        image={heroFaculty}
+        priority
+        eyebrow="Attendance intelligence"
+        title="Faculty Management Dashboard"
+        description="Department-wise faculty roster with total strength and an 8-hour duty completion breakdown, synced live from your attendance sheet."
+      />
 
       <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
         <div className="mb-6">
