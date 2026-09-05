@@ -11,3 +11,4 @@
 - [x] Attendance tab: "Year of study" column per faculty
 - [x] Marks tab: year shown in faculty summary, faculty sections and subject headers
 - Note: Sheet3/4/5 have only BRANCH + HTNO, no section link, so student rows cannot be tied to a year
+- [ ] Add a hero image to each tab and polish the visual design
