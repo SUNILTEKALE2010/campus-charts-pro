@@ -27,7 +27,15 @@ export function PageHero({
       />
       <div
         className="absolute inset-0"
-        style={{ background: "var(--gradient-hero)", opacity: 0.86 }}
+        style={{ background: "var(--gradient-hero)", opacity: 0.68 }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(100deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 55%, transparent 100%)",
+        }}
       />
       <div
         aria-hidden="true"
