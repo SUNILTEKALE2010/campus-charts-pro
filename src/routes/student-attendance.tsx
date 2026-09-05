@@ -226,23 +226,13 @@ function StudentAttendance() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header
-        className="px-6 py-14 text-primary-foreground sm:px-10"
-        style={{ background: "var(--gradient-hero)" }}
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-80">
-            Student attendance
-          </p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Student Attendance &amp; Condonation
-          </h1>
-          <p className="mt-3 max-w-2xl text-base opacity-85">
-            Department-wise month attendance, attendance percentage, hall ticket search, and the list
-            of students who must apply for condonation.
-          </p>
-        </div>
-      </header>
+      <PageHero
+        image={heroStudentAttendance}
+        priority
+        eyebrow="Student attendance"
+        title={<>Student Attendance &amp; Condonation</>}
+        description="Department-wise month attendance, attendance percentage, hall ticket search, and the list of students who must apply for condonation."
+      />
 
       <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
         <div className="mb-6">

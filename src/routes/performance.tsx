@@ -281,23 +281,13 @@ function Performance() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header
-        className="px-6 py-14 text-primary-foreground sm:px-10"
-        style={{ background: "var(--gradient-hero)" }}
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-80">
-            Academic performance
-          </p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Department &amp; Faculty Marks
-          </h1>
-          <p className="mt-3 max-w-2xl text-base opacity-85">
-            Average, highest, lowest, median marks and percentages — department-wise and faculty-wise
-            — with bar and pie comparisons.
-          </p>
-        </div>
-      </header>
+      <PageHero
+        image={heroMarks}
+        priority
+        eyebrow="Academic performance"
+        title={<>Department &amp; Faculty Marks</>}
+        description="Average, highest, lowest, median marks and percentages — department-wise and faculty-wise — with bar and pie comparisons."
+      />
 
       <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
         <div className="mb-6">
