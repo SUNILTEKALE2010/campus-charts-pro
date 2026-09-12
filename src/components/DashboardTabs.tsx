@@ -6,7 +6,9 @@ const TABS = [
   { to: "/performance", label: "Marks" },
   { to: "/student-attendance", label: "Stud-Attendance" },
   { to: "/today-attendance", label: "Todays Attendance" },
+  { to: "/lesson-plan", label: "Quick Work-Smart Work" },
 ] as const;
+
 
 export function DashboardTabs() {
   return (
