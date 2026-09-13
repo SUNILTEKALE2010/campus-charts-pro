@@ -7,6 +7,7 @@ const TABS = [
   { to: "/student-attendance", label: "Stud-Attendance" },
   { to: "/today-attendance", label: "Todays Attendance" },
   { to: "/lesson-plan", label: "Quick Work-Smart Work" },
+  { to: "/question-bank", label: "Question-Bank" },
 ] as const;
 
 

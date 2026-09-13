@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LessonPlanRouteImport } from './routes/lesson-plan'
 import { Route as PerformanceRouteImport } from './routes/performance'
+import { Route as QuestionBankRouteImport } from './routes/question-bank'
 import { Route as StudentAttendanceRouteImport } from './routes/student-attendance'
 import { Route as TimetableRouteImport } from './routes/timetable'
 import { Route as TodayAttendanceRouteImport } from './routes/today-attendance'
@@ -29,6 +30,11 @@ const LessonPlanRoute = LessonPlanRouteImport.update({
 const PerformanceRoute = PerformanceRouteImport.update({
   id: '/performance',
   path: '/performance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestionBankRoute = QuestionBankRouteImport.update({
+  id: '/question-bank',
+  path: '/question-bank',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentAttendanceRoute = StudentAttendanceRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/lesson-plan': typeof LessonPlanRoute
   '/performance': typeof PerformanceRoute
+  '/question-bank': typeof QuestionBankRoute
   '/student-attendance': typeof StudentAttendanceRoute
   '/timetable': typeof TimetableRoute
   '/today-attendance': typeof TodayAttendanceRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/lesson-plan': typeof LessonPlanRoute
   '/performance': typeof PerformanceRoute
+  '/question-bank': typeof QuestionBankRoute
   '/student-attendance': typeof StudentAttendanceRoute
   '/timetable': typeof TimetableRoute
   '/today-attendance': typeof TodayAttendanceRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/lesson-plan': typeof LessonPlanRoute
   '/performance': typeof PerformanceRoute
+  '/question-bank': typeof QuestionBankRoute
   '/student-attendance': typeof StudentAttendanceRoute
   '/timetable': typeof TimetableRoute
   '/today-attendance': typeof TodayAttendanceRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/lesson-plan'
     | '/performance'
+    | '/question-bank'
     | '/student-attendance'
     | '/timetable'
     | '/today-attendance'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/lesson-plan'
     | '/performance'
+    | '/question-bank'
     | '/student-attendance'
     | '/timetable'
     | '/today-attendance'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/lesson-plan'
     | '/performance'
+    | '/question-bank'
     | '/student-attendance'
     | '/timetable'
     | '/today-attendance'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LessonPlanRoute: typeof LessonPlanRoute
   PerformanceRoute: typeof PerformanceRoute
+  QuestionBankRoute: typeof QuestionBankRoute
   StudentAttendanceRoute: typeof StudentAttendanceRoute
   TimetableRoute: typeof TimetableRoute
   TodayAttendanceRoute: typeof TodayAttendanceRoute
@@ -129,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/performance'
       fullPath: '/performance'
       preLoaderRoute: typeof PerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/question-bank': {
+      id: '/question-bank'
+      path: '/question-bank'
+      fullPath: '/question-bank'
+      preLoaderRoute: typeof QuestionBankRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student-attendance': {
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LessonPlanRoute: LessonPlanRoute,
   PerformanceRoute: PerformanceRoute,
+  QuestionBankRoute: QuestionBankRoute,
   StudentAttendanceRoute: StudentAttendanceRoute,
   TimetableRoute: TimetableRoute,
   TodayAttendanceRoute: TodayAttendanceRoute,
