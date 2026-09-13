@@ -61,6 +61,7 @@ async function askAi(lovableKey: string, prompt: string): Promise<Record<string,
     }),
   });
 
+  console.error(`QB ai status ${res.status}`);
   if (!res.ok || !res.body) {
     const body = await res.text();
     console.error(`Question bank request failed [${res.status}]: ${body}`);
