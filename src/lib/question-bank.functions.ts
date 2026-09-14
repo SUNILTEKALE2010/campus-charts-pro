@@ -10,12 +10,17 @@ export type MCQItem = {
   example: string;
 };
 
-export type QuestionBankResult = {
-  subject: string;
+export type ModuleQuestionBank = {
+  module: string;
   longQuestions: QAItem[];
   shortQuestions: QAItem[];
   fillInTheBlanks: QAItem[];
   mcqs: MCQItem[];
+};
+
+export type QuestionBankResult = {
+  subject: string;
+  modules: ModuleQuestionBank[];
 };
 
 function toQA(list: unknown): QAItem[] {
@@ -61,7 +66,6 @@ async function askAi(lovableKey: string, prompt: string): Promise<Record<string,
     }),
   });
 
-  console.error(`QB ai status ${res.status}`);
   if (!res.ok || !res.body) {
     const body = await res.text();
     console.error(`Question bank request failed [${res.status}]: ${body}`);
@@ -115,53 +119,65 @@ async function askAi(lovableKey: string, prompt: string): Promise<Record<string,
   }
 }
 
+/** Splits the pasted syllabus into modules, one per line or blank-line block. */
+function parseModules(input: string): string[] {
+  return input
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .slice(0, 10);
+}
+
 export const generateQuestionBank = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => {
     const d = (data ?? {}) as Record<string, unknown>;
     const subject = String(d["subject"] ?? "").trim();
-    const topic = String(d["topic"] ?? "").trim();
+    const modules = parseModules(String(d["modules"] ?? ""));
     if (!subject) throw new Error("Please enter the subject name.");
-    return { subject, topic };
+    if (modules.length === 0) {
+      throw new Error("Please enter the syllabus modules — one module per line.");
+    }
+    return { subject, modules };
   })
   .handler(async ({ data }): Promise<QuestionBankResult> => {
     const lovableKey = process.env["LOVABLE_API_KEY"];
     if (!lovableKey) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const header = `You are an experienced college faculty member preparing an exam question bank.
-
-SUBJECT: ${data.subject}
-${data.topic ? `FOCUS TOPICS/UNITS: ${data.topic}` : ""}
-
-Every item needs an answer in simple plain language a student can understand, plus a
-short real-world / real-time example. Keep answers concise (2-3 sentences).
-Return ONLY valid JSON, no markdown fences.`;
-
     const qaShape = `{"items":[{"question":"...","answer":"...","example":"..."}]}`;
 
-    const [long, short, blanks, mcq] = await Promise.all([
-      askAi(
-        lovableKey,
-        `${header}\nCreate exactly 10 LONG ANSWER questions.\nJSON shape: ${qaShape}`,
-      ),
-      askAi(
-        lovableKey,
-        `${header}\nCreate exactly 10 SHORT ANSWER questions.\nJSON shape: ${qaShape}`,
-      ),
-      askAi(
-        lovableKey,
-        `${header}\nCreate exactly 10 FILL IN THE BLANKS. Each question must contain a "______" blank and the answer is the missing word or phrase.\nJSON shape: ${qaShape}`,
-      ),
-      askAi(
-        lovableKey,
-        `${header}\nCreate exactly 10 MULTIPLE CHOICE questions with 4 options each. "answer" must be the full text of the correct option.\nJSON shape: {"items":[{"question":"...","options":["a","b","c","d"],"answer":"...","example":"..."}]}`,
-      ),
-    ]);
+    const modules = await Promise.all(
+      data.modules.map(async (moduleName, idx): Promise<ModuleQuestionBank> => {
+        const header = `You are an experienced college faculty member preparing an exam question bank.
 
-    return {
-      subject: data.subject,
-      longQuestions: toQA(long["items"]),
-      shortQuestions: toQA(short["items"]),
-      fillInTheBlanks: toQA(blanks["items"]),
-      mcqs: toMCQ(mcq["items"]),
-    };
+SUBJECT: ${data.subject}
+MODULE ${idx + 1}: ${moduleName}
+
+Ask only about this module's content. Every item needs an answer in simple plain
+language a student can understand, plus a short real-world / real-time example.
+Keep answers concise (2-3 sentences). Return ONLY valid JSON, no markdown fences.`;
+
+        const [long, short, blanks, mcq] = await Promise.all([
+          askAi(lovableKey, `${header}\nCreate exactly 10 LONG ANSWER questions.\nJSON shape: ${qaShape}`),
+          askAi(lovableKey, `${header}\nCreate exactly 10 SHORT ANSWER questions.\nJSON shape: ${qaShape}`),
+          askAi(
+            lovableKey,
+            `${header}\nCreate exactly 10 FILL IN THE BLANKS. Each question must contain a "______" blank and the answer is the missing word or phrase.\nJSON shape: ${qaShape}`,
+          ),
+          askAi(
+            lovableKey,
+            `${header}\nCreate exactly 10 MULTIPLE CHOICE questions with 4 options each. "answer" must be the full text of the correct option.\nJSON shape: {"items":[{"question":"...","options":["a","b","c","d"],"answer":"...","example":"..."}]}`,
+          ),
+        ]);
+
+        return {
+          module: moduleName,
+          longQuestions: toQA(long["items"]),
+          shortQuestions: toQA(short["items"]),
+          fillInTheBlanks: toQA(blanks["items"]),
+          mcqs: toMCQ(mcq["items"]),
+        };
+      }),
+    );
+
+    return { subject: data.subject, modules };
   });
